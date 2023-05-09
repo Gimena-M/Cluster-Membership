@@ -1,0 +1,364 @@
+"""
+Create, train and test a NN model that (attempts to) preddict cluster membership.
+
+From command line: python model_tests.py model.py [-e] [-r 42] [-t] [-bt] 
+Arguments:
+    .py file with model parameters (has to be in the same directory as this file).
+Options:
+    -e     If model has already been saved and trained, load existing model and training history.
+    -r     Change random_state for training-validation-split (it's set to a fixed number by default)
+    -t     Test different thresholds
+    -bt    Compute thresholds that maximize F-Score or G-Means
+
+The .py file with model parameters has:
+    layers: list of layers for the network
+    compile_params: parameters for model.compile(). Optimizer, loss function, metrics...
+    epochs: number of epochs
+    normalization: if True, a normalization layer is added as a first layer, and adapted with features.
+    balance: how to deal with class imbalance. Can be 'weights', 'SMOTE' or None
+
+Results are saved into a "metrics" directory.
+The features to be used are listed in features.txt
+"""
+
+
+
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import math
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def read_data():
+    # read and join tables
+    df1 = pd.read_csv('data/clean-HSC-unWISE-W01.csv')
+    df1 = df1.drop(columns = [f for f in df1.columns if ('isnull' in f)])
+    df2 = pd.read_csv('data/clean-HSC-unWISE-W02.csv')
+    df2 = df2.drop(columns = [f for f in df2.columns if ('isnull' in f)])
+    df = pd.concat([df1,df2], axis = 'rows')
+    
+    # add colors
+    df['gr'] = df['g_cmodel_mag'] - df['r_cmodel_mag']
+    df['ri'] = df['r_cmodel_mag'] - df['i_cmodel_mag']
+    df['iz'] = df['i_cmodel_mag'] - df['z_cmodel_mag']
+    df['zy'] = df['z_cmodel_mag'] - df['y_cmodel_mag']
+    
+    return df
+       
+def features_labels(df):  
+    
+    # read features list
+    with open('data/features1.txt') as file:
+        feat = file.read().splitlines()
+    lab = 'member'
+    
+    # print number of members
+    n_mem = df[df.member == 1].shape[0]
+    n_no = df[df.member == 0].shape[0]
+    n = df.shape[0]
+    print ('Members: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
+    print ('Non members: {} ({:.2f}%)'.format(n_no, n_no/n*100))
+    print('-'*70)
+    
+    return feat,lab
+    
+def split(df, lab, ran_state):
+    
+    # split into training, testing and validation samples. 
+    from sklearn.model_selection import train_test_split
+    train, test = train_test_split(df, test_size = 0.3, stratify = df[lab], random_state = ran_state)
+    val, test = train_test_split(test, test_size = 0.3, stratify = test[lab], random_state = ran_state)
+    
+    print ('Training: {} members, {} non members'.format(train[train.member == 1].shape[0], train[train.member == 0].shape[0]))
+    print ('Validation: {} members, {} non members'.format(val[val.member == 1].shape[0], val[val.member == 0].shape[0]))
+    print ('Testing: {} members, {} non members'.format(test[test.member == 1].shape[0], test[test.member == 0].shape[0]))
+    print('-'*70)
+    
+    return train,val,test
+    
+def write_report(pred, model, test, feat, lab, filename):
+    
+    # write metrics into file: loss, auc, classification report
+    from sklearn.metrics import auc, classification_report, roc_curve, precision_recall_curve
+    
+    pred_classes = np.round(pred, decimals = 0)    
+    fpr, tpr, thres_roc = roc_curve(test[lab], pred, pos_label=1)
+    prec, rec, thres_pr = precision_recall_curve(test[lab], pred, pos_label= 1)
+    test_loss = model.evaluate(test[feat], test[lab], verbose=0)
+    
+    def model_write(string):
+        file.write(string + '\n')
+
+    with open(filename, mode='w') as file:
+        model.summary(print_fn= model_write)
+        file.write('\n\n')
+        file.write('Optimizer: {} \n'.format(model.optimizer))
+        file.write('Loss function: {} \n'.format(model.loss))
+        file.write('Notes: \n')
+        file.write('-'*70 + '\n')
+        file.write('Loss on test dataset: {:.4g} \n'.format(test_loss))
+        file.write('ROC curve AUC: {}\n'.format(auc(fpr, tpr)))
+        file.write('Precision-recall AUC: {}\n'.format(auc(rec, prec)))
+        file.write('-'*70 + '\n')
+        file.write(classification_report(test[lab],pred_classes))
+
+def plot_report(pred, history, test_lab, filename):
+    
+    # plot loss during training, roc curve, precision-recall curve and confusion matrix to file
+    from sklearn.metrics import confusion_matrix, roc_curve, precision_recall_curve
+    
+    pred_classes = np.round(pred, decimals = 0)    
+    fpr, tpr, thres_roc = roc_curve(test_lab, pred, pos_label=1)
+    prec, rec, thres_pr = precision_recall_curve(test_lab, pred, pos_label= 1)
+    
+    plt.figure(figsize=(10,10))
+    
+    # loss during training
+    plt.subplot(2, 2, 1)
+    plt.plot(history['loss'], label='Train')
+    plt.plot(history['val_loss'], label='Validation')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.grid()
+    plt.legend()
+    
+    # confusion matrix
+    plt.subplot(2, 2, 2)
+    conf_m = confusion_matrix(test_lab, pred_classes)
+    df_conf_m = pd.DataFrame(conf_m, index=[0,1], columns=[0,1])
+    sns.heatmap(df_conf_m, cmap=sns.color_palette('light:teal', as_cmap=True), annot=True, fmt='d')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+
+    # ROC curve
+    plt.subplot(2, 2, 3)
+    plt.plot(fpr, tpr)
+    plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('FPR')
+    plt.ylabel('TPR')
+    plt.grid()
+    
+    # Precision-recall curve
+    a = len (test_lab[test_lab == 1])/len(test_lab)
+    plt.subplot(2, 2, 4)
+    plt.plot(rec, prec)
+    plt.plot([0, 1], [a, a] , color='gray', linestyle='--')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.grid()
+    plt.xlim([0,1])
+    plt.ylim([0,1])
+
+    plt.savefig(filename, dpi=150, bbox_inches= 'tight') 
+
+def test_thresholds(thresholds, pred, test_lab, filename):
+    
+    from sklearn.metrics import confusion_matrix
+    
+    # get predictions with different thresholds
+    pred_c_thres = []    
+    for t in thresholds:
+        pred_c_thres.append(
+            [math.floor(p[0]) if p[0] < t else math.ceil(p[0]) for p in pred]
+        )
+    
+    # plot conf matrix for each
+    plt.figure(figsize=(15,4))
+    
+    for i,(p,t) in enumerate(zip(pred_c_thres,thresholds)):
+        plt.subplot(1, 3, i+1)
+        plt.title(f'threshold = {t}')
+        c = confusion_matrix(test_lab, p)
+        c = pd.DataFrame(c, index=[0,1], columns=[0,1])
+        sns.heatmap(c, cmap=sns.color_palette('light:indigo', as_cmap=True), annot=True, fmt='d')
+        plt.xlabel('Predicted')
+        plt.ylabel('True')
+        
+    plt.savefig(filename, dpi=150, bbox_inches= 'tight')
+
+def test_best_thresholds(pred, test_lab, filename):
+
+    from sklearn.metrics import roc_curve, precision_recall_curve, confusion_matrix
+      
+    # With G-Mean
+    fpr, tpr, thres_roc = roc_curve(test_lab, pred, pos_label=1)
+    gmeans = (tpr * (1-fpr))**(1/2)
+    max_gmeans = np.argmax(gmeans) # locate the index of the largest g-mean
+    
+    # ROC Curve
+    plt.figure(figsize=(10,10))
+    plt.subplot(2, 2, 1)
+    plt.plot(fpr, tpr)
+    plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+    plt.plot(fpr[max_gmeans], tpr[max_gmeans], marker='o', color='black')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('FPR')
+    plt.ylabel('TPR')
+    plt.title(f'G-Mean = {gmeans[max_gmeans]:.3f}')
+    plt.grid()
+    # Conf matrix
+    pred_gmeans = [math.floor(p[0]) if p[0] < thres_roc[max_gmeans] else math.ceil(p[0]) for p in pred]
+    plt.subplot(2, 2, 2)
+    plt.title(f'Threshold = {thres_roc[max_gmeans] :.3f}')
+    c = confusion_matrix(test_lab, pred_gmeans)
+    c = pd.DataFrame(c, index=[0,1], columns=[0,1])
+    sns.heatmap(c, cmap=sns.color_palette('light:chocolate', as_cmap=True), annot=True, fmt='d')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    
+    # With F-Score
+    prec, rec, thres_pr = precision_recall_curve(test_lab, pred, pos_label= 1)
+    fscore = (2 * prec * rec) / (prec + rec)
+    max_f = np.argmax(fscore)
+
+    # Precision-recall curve
+    plt.subplot(2, 2, 3)
+    plt.plot(rec, prec)
+    plt.plot(rec[max_f], prec[max_f], marker='o', color='black')
+    a = len (test_lab[test_lab == 1])/len(test_lab)
+    plt.plot([0, 1], [a, a] , color='gray', linestyle='--')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title(f'F-Score = {fscore[max_f] :.3f}')
+    plt.grid()
+    plt.xlim([0,1])
+    plt.ylim([0,1])
+    # Conf matrix
+    pred_f = [math.floor(p[0]) if p[0] < thres_pr[max_f] else math.ceil(p[0]) for p in pred]
+    plt.subplot(2, 2, 4)
+    c = confusion_matrix(test_lab, pred_f)
+    c = pd.DataFrame(c, index=[0,1], columns=[0,1])
+    sns.heatmap(c, cmap=sns.color_palette('light:mediumvioletred', as_cmap=True), annot=True, fmt='d')
+    plt.title(f'Threshold = {thres_pr[max_f] :.3f}')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    
+    plt.savefig(filename, dpi=150, bbox_inches= 'tight')
+
+def class_weights(df, lab):
+    # compute class weights
+    from sklearn.utils.class_weight import compute_class_weight
+    wei =  compute_class_weight(class_weight = 'balanced', classes = np.unique(df[lab]), y = df[lab])
+    weights = {}
+    for w,l in zip(wei,np.unique(df[lab])):
+        weights[l] = w
+    return weights
+
+def smote(train, feat, lab):
+    # deal with imbalanced data using undersampling + smote
+    from imblearn.over_sampling import SMOTE
+    from imblearn.under_sampling import RandomUnderSampler
+    # undersampling majority class
+    rus = RandomUnderSampler(sampling_strategy= 3./7, replacement= False)
+    rus_feat, rus_lab = rus.fit_resample(train[feat], train[lab])
+    # smote
+    smote = SMOTE(sampling_strategy= 2./3)
+    smote_feat, smote_lab = smote.fit_resample(rus_feat, rus_lab)
+    
+    n_mem = len(smote_lab[smote_lab == 1])
+    n_no = len(smote_lab[smote_lab == 0])
+    n = len(smote_lab)
+    print('SMOTE:')
+    print ('Members: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
+    print ('Non members: {} ({:.2f}%)'.format(n_no, n_no/n*100))
+    
+    smote_feat[lab] = smote_lab
+    return smote_feat
+
+ 
+        
+if __name__ == "__main__":
+    
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('model_name') # file with model, given as argument in command line without .py extension
+    parser.add_argument('-e', '--model_exists', action='store_true') # does the model already exist?
+    parser.add_argument('-r', '--random_state', action='store', default=42) # for train-val-test split
+    parser.add_argument('-t', '--thresholds', action='store_true') # test different thresholds?
+    parser.add_argument('-bt', '--best_thresholds', action='store_true') # check best thresholds?
+    
+    model_name = parser.parse_args().model_name
+    model_exists = parser.parse_args().model_exists    
+    random_state = int(parser.parse_args().random_state)
+    thresholds = parser.parse_args().thresholds 
+    best_thresholds = parser.parse_args().best_thresholds 
+    
+    # prepare data
+    data = read_data()
+    features,label = features_labels(df=data)
+    training,validation,testing = split(df=data, lab=label, ran_state=random_state)
+    
+    
+    # if the model has already been trained and saved, skip the following    
+    if not model_exists:
+        
+        # import variables from file, 
+        import importlib
+        mod = importlib.import_module(model_name)
+        layers = getattr(mod, 'layers')
+        compile_params = getattr(mod, 'compile_params')
+        epochs = getattr(mod, 'epochs')
+        normalization = getattr(mod, 'normalization')
+        balance = getattr(mod, 'balance') 
+        
+        # left model checkpoint to save best model
+        callbacks = [
+            # tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True),
+            tf.keras.callbacks.CSVLogger(filename = f'saved_models/{model_name}_log.csv'),
+            tf.keras.callbacks.ModelCheckpoint(filepath = f'saved_models/{model_name}.h5', monitor = 'val_loss',  save_best_only = True),
+            # tf.keras.callbacks.TensorBoard()
+            ]
+       
+        #include normalization layer?
+        if normalization:
+            norm = tf.keras.layers.Normalization(input_shape=(len(features),))
+            norm.adapt(data = training[features].values)
+            layers.insert(0, norm)
+        
+        # make model and compile. Make dict with arguments for fit function.
+        nn_model = tf.keras.Sequential(layers)  
+        nn_model.compile(**compile_params)
+        fit_params = dict(
+            x = training[features].values, 
+            y = training[label].values,
+            verbose = 2, 
+            callbacks = callbacks,
+            validation_data = (validation[features].values, validation[label].values), 
+            epochs = epochs,
+            batch_size = 4096
+            )
+    
+        # class imbalance?
+        match balance:
+            case None:
+                nn_model.fit(**fit_params)
+            case 'weights':
+                fit_params['class_weight'] = class_weights(data, label)
+                nn_model.fit(**fit_params) 
+            case 'SMOTE':
+                training = smote(training, features, label)
+                fit_params['class_weight'] = class_weights(training, label)
+                nn_model.fit(**fit_params)
+            case _:
+                raise ValueError("Invalid value for 'balance'")
+                 
+  
+    # load best model and history from files
+    nn_model = tf.keras.models.load_model(f'saved_models/{model_name}.h5')
+    history = pd.read_csv(f'saved_models/{model_name}_log.csv')
+    
+    # save metrics
+    predictions = nn_model.predict(testing[features].values, verbose = 0)
+    write_report(predictions, nn_model, testing, features, label, f'metrics/{model_name}.txt')
+    plot_report(predictions, history, testing[label], f'metrics/{model_name}.png')
+    
+    # test different thresholds
+    if thresholds:
+        test_thresholds([0.45,0.5,0.55], predictions, testing[label], f'metrics/{model_name}_thresholds.png')
+    
+    if best_thresholds:
+        test_best_thresholds(predictions, testing[label], f'metrics/{model_name}_best-thresholds_.png')

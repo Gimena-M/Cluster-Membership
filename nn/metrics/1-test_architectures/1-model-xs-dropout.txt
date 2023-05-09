@@ -1,0 +1,36 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization (Normalizatio  (None, 59)               119       
+ n)                                                              
+                                                                 
+ dense (Dense)               (None, 64)                3840      
+                                                                 
+ dropout (Dropout)           (None, 64)                0         
+                                                                 
+ dense_1 (Dense)             (None, 1)                 65        
+                                                                 
+=================================================================
+Total params: 4,024
+Trainable params: 3,905
+Non-trainable params: 119
+_________________________________________________________________
+
+
+Optimizer: <keras.optimizers.optimizer_v2.adam.Adam object at 0x0000021A383CD690> 
+Loss function: <keras.losses.BinaryCrossentropy object at 0x0000021A383CFFD0> 
+Notes: 
+----------------------------------------------------------------------
+Loss on test dataset: 0.6038 
+AUC: 0.7315098882780847
+Precision-recall AUC: 0.3302924467176408
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.92      0.64      0.75     18222
+           1       0.28      0.70      0.40      3621
+
+    accuracy                           0.65     21843
+   macro avg       0.60      0.67      0.58     21843
+weighted avg       0.81      0.65      0.69     21843

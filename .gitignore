@@ -1,0 +1,13 @@
+Gimena_ClusterML/
+clean-data/clean.ipynb
+nn/metrics/old/
+nn/metrics/1-test_architectures.txt
+sql_scripts/scripts_data/OTRO/
+sql_scripts/scripts_data/notes.txt
+sql_scripts/cred.txt
+sql_scripts/scripts_data/0-Wen&Han/*.dat
+sql_scripts/scripts_data/1-sql-ids/*.fits
+sql_scripts/scripts_data/2-matched-ids/*
+sql_scripts/scripts_data/3-joined-mem-gal/*
+sql_scripts/scripts_data/4-sql-cols/*.fits
+
