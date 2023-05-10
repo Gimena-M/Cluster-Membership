@@ -1,0 +1,40 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization (Normalizatio  (None, 59)               119       
+ n)                                                              
+                                                                 
+ dense (Dense)               (None, 40)                2400      
+                                                                 
+ dropout (Dropout)           (None, 40)                0         
+                                                                 
+ dense_1 (Dense)             (None, 20)                820       
+                                                                 
+ dropout_1 (Dropout)         (None, 20)                0         
+                                                                 
+ dense_2 (Dense)             (None, 1)                 21        
+                                                                 
+=================================================================
+Total params: 3,360
+Trainable params: 3,241
+Non-trainable params: 119
+_________________________________________________________________
+
+
+Optimizer: <keras.optimizers.optimizer_v2.adam.Adam object at 0x000001B50EF49E10> 
+Loss function: <keras.losses.BinaryCrossentropy object at 0x000001B514802F50> 
+Notes: 
+----------------------------------------------------------------------
+Loss on test dataset: 0.4465 
+ROC curve AUC: 0.8699062500393503
+Precision-recall AUC: 0.4211463119969836
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.98      0.77      0.86      8877
+           1       0.32      0.86      0.47      1163
+
+    accuracy                           0.78     10040
+   macro avg       0.65      0.81      0.66     10040
+weighted avg       0.90      0.78      0.81     10040

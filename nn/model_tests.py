@@ -1,7 +1,8 @@
 """
 Create, train and test a NN model that (attempts to) preddict cluster membership.
 
-From command line: python model_tests.py model.py [-e] [-r 42] [-t] [-bt] 
+From command line: python model_tests.py model.py [-e] [-r 42] [-t] [-bt]
+                                        [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
 Arguments:
     .py file with model parameters (has to be in the same directory as this file).
 Options:
@@ -9,6 +10,8 @@ Options:
     -r     Change random_state for training-validation-split (it's set to a fixed number by default)
     -t     Test different thresholds
     -bt    Compute thresholds that maximize F-Score or G-Means
+    --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
+    --min_z, --max            Minimum and maximum for cluster's z. Default: None
 
 The .py file with model parameters has:
     layers: list of layers for the network
@@ -62,6 +65,26 @@ def features_labels(df):
     print('-'*70)
     
     return feat,lab
+
+def z_n500_limits(df, mini_z = None, maxi_z = None, mini_n500 = None, maxi_n500 = None):
+    # Select galaxies near clusters in a z and n500 range...
+    # df has a column 'id_cl_near', with the id of the nearest cluster. 
+    df_cl = pd.read_table('data/clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
+    
+    cond = True
+    if mini_z != None:
+        cond = (cond) & (df_cl.phot_z_cl >= mini_z)
+    if maxi_z != None:
+        cond = (cond) & (df_cl.phot_z_cl <= maxi_z)
+    if mini_n500 != None:  
+        cond = (cond) & (df_cl.n500_cl >= mini_n500)
+    if maxi_n500 != None:
+        cond = (cond) & (df_cl.n500_cl <= maxi_n500)
+        
+    df_cl = df_cl[cond]  
+    df = df[df['id_cl_near'].isin(df_cl.id_cl)]
+    
+    return df
     
 def split(df, lab, ran_state):
     
@@ -277,18 +300,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('model_name') # file with model, given as argument in command line without .py extension
     parser.add_argument('-e', '--model_exists', action='store_true') # does the model already exist?
-    parser.add_argument('-r', '--random_state', action='store', default=42) # for train-val-test split
+    parser.add_argument('-r', '--random_state', action='store', default=42, type= int) # for train-val-test split
     parser.add_argument('-t', '--thresholds', action='store_true') # test different thresholds?
     parser.add_argument('-bt', '--best_thresholds', action='store_true') # check best thresholds?
+    parser.add_argument('--min_n500', action='store', default=None, type= float) # minimum for cluster n500?
+    parser.add_argument('--max_n500', action='store', default=None, type= float) # maximum for cluster n500?
+    parser.add_argument('--min_z', action='store', default=None, type= float) # minimum for cluster z?
+    parser.add_argument('--max_z', action='store', default=None, type= float) # maximum for cluster z?
     
     model_name = parser.parse_args().model_name
     model_exists = parser.parse_args().model_exists    
-    random_state = int(parser.parse_args().random_state)
+    random_state = parser.parse_args().random_state
     thresholds = parser.parse_args().thresholds 
     best_thresholds = parser.parse_args().best_thresholds 
+    min_n500 = parser.parse_args().min_n500
+    max_n500 = parser.parse_args().max_n500
+    min_z = parser.parse_args().min_z
+    max_z = parser.parse_args().max_z
     
     # prepare data
     data = read_data()
+    if any(val != None for val in [min_n500, max_n500, min_z, max_z]):
+        data = z_n500_limits(data, min_z, max_z, min_n500, max_n500) 
     features,label = features_labels(df=data)
     training,validation,testing = split(df=data, lab=label, ran_state=random_state)
     

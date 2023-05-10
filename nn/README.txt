@@ -1,13 +1,18 @@
 model_tests.py trains and tests a NN model that preddicts cluster membership.
 
-From command line: python model_tests.py model.py [-e] [-r 42] [-t] [-bt] 
+From command line: python model_tests.py model [-e] [-r 42] [-t] [-bt] 
+                                        [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+
 Arguments:
-    .py file with model parameters (has to be in the same directory as model_tests.py).
+    model  .py file with model parameters (has to be in the same directory as model_tests.py). Without extension.
 Options:
     -e     If model has already been saved and trained, load existing model and training history.
-    -r     Change random_state for training-validation-split (it's set to a fixed number by default)
+    -r     Change random_state for training-validation-test split (it's set to a fixed number by default)
     -t     Test different thresholds
     -bt    Compute thresholds that maximize F-Score or G-Means
+    --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
+    --min_z, --max_z          Minimum and maximum for cluster's z. Default: None
+
 
 The .py file with model parameters has:
     layers: list of layers for the network
