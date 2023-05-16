@@ -1,0 +1,31 @@
+bootstrap: True 
+ccp_alpha: 0.0 
+class_weight: balanced 
+criterion: entropy 
+max_depth: 10 
+max_features: log2 
+max_leaf_nodes: None 
+max_samples: None 
+min_impurity_decrease: 0.0 
+min_samples_leaf: 2 
+min_samples_split: 2 
+min_weight_fraction_leaf: 0.0 
+n_estimators: 120 
+n_jobs: -1 
+oob_score: False 
+random_state: None 
+verbose: 0 
+warm_start: False 
+----------------------------------------------------------------------
+Model score: 0.6866 
+ROC curve AUC: 0.7658758959346206
+Precision-recall AUC: 0.6654113551401747
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.78      0.67      0.72     21125
+           1       0.59      0.71      0.65     14084
+
+    accuracy                           0.69     35209
+   macro avg       0.68      0.69      0.68     35209
+weighted avg       0.70      0.69      0.69     35209

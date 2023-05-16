@@ -7,7 +7,7 @@ Arguments:
     .py file with model parameters (has to be in the same directory as this file).
 Options:
     -e     If model has already been saved and trained, load existing model and training history.
-    -r     Change random_state for training-validation-split (it's set to a fixed number by default)
+    -r     Change random_state for training-validation-testing split (it's set to a fixed number by default)
     -t     Test different thresholds
     -bt    Compute thresholds that maximize F-Score or G-Means
     --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None

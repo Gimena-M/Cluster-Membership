@@ -1,9 +1,9 @@
 Gimena_ClusterML/
 clean-data/clean.ipynb
-nn/batch.bat
-nn/metrics/old/
-nn/metrics/1-test_architectures.txt
-nn/__pycache__
+NN/batch.bat
+NN/metrics/old/
+NN/metrics/1-test_architectures.txt
+NN/__pycache__
 sql_scripts/scripts_data/OTRO/
 sql_scripts/scripts_data/notes.txt
 sql_scripts/cred.txt
@@ -13,3 +13,4 @@ sql_scripts/scripts_data/2-matched-ids/*
 sql_scripts/scripts_data/3-joined-mem-gal/*
 sql_scripts/scripts_data/4-sql-cols/*.fits
 .ipynb_checkpoints
+.vscode
