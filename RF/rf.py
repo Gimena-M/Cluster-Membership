@@ -24,9 +24,9 @@ import seaborn as sns
 
 def read_data():
     # read and join tables
-    df1 = pd.read_csv('data/clean-HSC-unWISE-W01.csv')
+    df1 = pd.read_csv('../DATA/clean-HSC-unWISE-W01.csv')
     df1 = df1.drop(columns = [f for f in df1.columns if ('isnull' in f)])
-    df2 = pd.read_csv('data/clean-HSC-unWISE-W02.csv')
+    df2 = pd.read_csv('../DATA/clean-HSC-unWISE-W02.csv')
     df2 = df2.drop(columns = [f for f in df2.columns if ('isnull' in f)])
     df = pd.concat([df1,df2], axis = 'rows')
     
@@ -41,7 +41,7 @@ def read_data():
 def features_labels(df):  
     
     # read features list
-    with open('data/features1.txt') as file:
+    with open('../DATA/features1.txt') as file:
         feat = file.read().splitlines()
     lab = 'member'
     
@@ -58,7 +58,7 @@ def features_labels(df):
 def z_n500_limits(df, mini_z = None, maxi_z = None, mini_n500 = None, maxi_n500 = None):
     # Select galaxies near clusters in a z and n500 range...
     # df has a column 'id_cl_near', with the id of the nearest cluster. 
-    df_cl = pd.read_table('data/clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
+    df_cl = pd.read_table('../DATA/clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
     
     cond = True
     if mini_z != None:
@@ -220,7 +220,7 @@ def params_search(json_file, model, df, feat, lab):
     search_model.fit(df[feat], df[lab])
 
     # save and print results
-    df_res = pd.DataFrame(search_model.cv_results_)
+    df_res = pd.DataFrame(search_model.cv_results_).sort_values('rank_test_score')
     df_res.to_csv(f'search_results/{search_json[:-5]}.csv')
     print('-'*70)
     print(f"Best model: score {search_model.best_score_}")
