@@ -1,0 +1,42 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization (Normalizatio  (None, 59)               119       
+ n)                                                              
+                                                                 
+ dense (Dense)               (None, 40)                2400      
+                                                                 
+ gaussian_dropout (GaussianD  (None, 40)               0         
+ ropout)                                                         
+                                                                 
+ dense_1 (Dense)             (None, 20)                820       
+                                                                 
+ gaussian_dropout_1 (Gaussia  (None, 20)               0         
+ nDropout)                                                       
+                                                                 
+ dense_2 (Dense)             (None, 1)                 21        
+                                                                 
+=================================================================
+Total params: 3,360
+Trainable params: 3,241
+Non-trainable params: 119
+_________________________________________________________________
+
+
+Optimizer: <keras.optimizers.optimizer_v2.adam.Adam object at 0x000001C92E27B100> 
+Loss function: <keras.losses.BinaryCrossentropy object at 0x000001C94B4EBDF0> 
+Notes: 
+----------------------------------------------------------------------
+Loss on test dataset: 0.5039 
+ROC curve AUC: 0.8301270110319571
+Precision-recall AUC: 0.410759970780114
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.96      0.67      0.79     12827
+           1       0.30      0.85      0.44      2170
+
+    accuracy                           0.69     14997
+   macro avg       0.63      0.76      0.62     14997
+weighted avg       0.87      0.69      0.74     14997

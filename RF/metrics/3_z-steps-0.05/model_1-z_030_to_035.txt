@@ -1,0 +1,41 @@
+bootstrap: True 
+ccp_alpha: 0.0 
+class_weight: balanced 
+criterion: entropy 
+max_depth: 10 
+max_features: log2 
+max_leaf_nodes: None 
+max_samples: None 
+min_impurity_decrease: 0.0 
+min_samples_leaf: 2 
+min_samples_split: 2 
+min_weight_fraction_leaf: 0.0 
+n_estimators: 120 
+n_jobs: -1 
+oob_score: False 
+random_state: None 
+verbose: 0 
+warm_start: False 
+----------------------------------------------------------------------
+model: model_1-z_030_to_035.json 
+search: None 
+load_model: None 
+fields_list: ['W01', 'W02', 'W03', 'W04'] 
+random_state: 42 
+min_n500: None 
+max_n500: None 
+min_z: 0.3 
+max_z: 0.35 
+----------------------------------------------------------------------
+Model score: 0.8881 
+ROC curve AUC: 0.9696386160264032
+Precision-recall AUC: 0.9054243561798186
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.98      0.87      0.92      9558
+           1       0.70      0.94      0.80      3055
+
+    accuracy                           0.89     12613
+   macro avg       0.84      0.90      0.86     12613
+weighted avg       0.91      0.89      0.89     12613

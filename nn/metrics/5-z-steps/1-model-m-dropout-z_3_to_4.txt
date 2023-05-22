@@ -1,0 +1,55 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization (Normalizatio  (None, 59)               119       
+ n)                                                              
+                                                                 
+ dense (Dense)               (None, 64)                3840      
+                                                                 
+ dropout (Dropout)           (None, 64)                0         
+                                                                 
+ dense_1 (Dense)             (None, 64)                4160      
+                                                                 
+ dropout_1 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_2 (Dense)             (None, 128)               8320      
+                                                                 
+ dropout_2 (Dropout)         (None, 128)               0         
+                                                                 
+ dense_3 (Dense)             (None, 1)                 129       
+                                                                 
+=================================================================
+Total params: 16,568
+Trainable params: 16,449
+Non-trainable params: 119
+_________________________________________________________________
+
+
+model_name: 1-model-m-dropout-z_3_to_4 
+model_exists: False 
+fields_list: ['W01', 'W02', 'W03'] 
+random_state: 42 
+thresholds: False 
+best_thresholds: False 
+min_n500: None 
+max_n500: None 
+min_z: 0.3 
+max_z: 0.4 
+----------------------------------------------------------------------
+Optimizer: <keras.optimizers.optimizer_v2.adam.Adam object at 0x000001EA4830B910> 
+Loss function: <keras.losses.BinaryCrossentropy object at 0x000001EA54B9B910> 
+Notes: 
+----------------------------------------------------------------------
+Loss on test dataset: 0.2806 
+ROC curve AUC: 0.9523807161987897
+Precision-recall AUC: 0.8664227561161685
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.96      0.89      0.92      2965
+           1       0.73      0.89      0.81      1020
+
+    accuracy                           0.89      3985
+   macro avg       0.85      0.89      0.86      3985
+weighted avg       0.90      0.89      0.89      3985

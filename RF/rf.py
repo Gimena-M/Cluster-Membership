@@ -1,12 +1,14 @@
 """
 Random forests hyper parameter search and model testing.
 
-From command line: python rf.py [-m model.json] [-s search.json] [-r 42]
+From command line: python rf.py [-m model.json] [-s search.json] [-l model.joblib] [-f W01 W02 W03] [-r 42]
                                 [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
 
 Options:
     -m     Train and test a model with hyper parameters given in  a JSON file. Save metrics.
     -s     Search on hyper parameters, with distributions given in  a JSON file. Save metrics for best model.
+    -l     Load existing model.
+    -f     List of HSC fields (default: W01, W02, W03 & W04) 
     -r     Change random_state for training-testing split (it's set to a fixed number by default)
     --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
     --min_z, --max            Minimum and maximum for cluster's z. Default: None
@@ -22,13 +24,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def read_data():
+def read_data(fields):
     # read and join tables
-    df1 = pd.read_csv('../DATA/clean-HSC-unWISE-W01.csv')
-    df1 = df1.drop(columns = [f for f in df1.columns if ('isnull' in f)])
-    df2 = pd.read_csv('../DATA/clean-HSC-unWISE-W02.csv')
-    df2 = df2.drop(columns = [f for f in df2.columns if ('isnull' in f)])
-    df = pd.concat([df1,df2], axis = 'rows')
+    li = []
+    for fi in fields:
+        d = pd.read_csv(f'../DATA/clean-HSC-unWISE-{fi}.csv')
+        li.append(d.drop(columns = [f for f in d.columns if ('isnull' in f)]))
+    df = pd.concat(li, axis = 'rows')
     
     # add colors
     df['gr'] = df['g_cmodel_mag'] - df['r_cmodel_mag']
@@ -103,7 +105,7 @@ def undersample(df, feat, lab):
 
     return rus_feat
 
-def write_report(model, test, feat, lab, filename):
+def write_report(model, test, feat, lab, filename, args):
     
     # write metrics to file: score, auc, classification report
     from sklearn.metrics import auc, classification_report, roc_curve, precision_recall_curve
@@ -119,6 +121,9 @@ def write_report(model, test, feat, lab, filename):
         
         for key in model.get_params():
             file.write(f'{key}: {model.get_params()[key]} \n')
+        file.write('-'*70 + '\n')
+        for key in args:
+            file.write(f'{key}: {args[key]} \n')
         file.write('-'*70 + '\n')
         file.write('Model score: {:.4g} \n'.format(model_score))
         file.write('ROC curve AUC: {}\n'.format(auc(fpr, tpr)))
@@ -250,10 +255,13 @@ def train_test_model(json_file, model, df, feat, lab):
 
 if __name__ == "__main__":
     
+    import joblib
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--model', action='store', default=None) # test a model? Stores name of JSON file with params.
-    parser.add_argument('-s', '--search', action='store', default=None,) # search on hyperparameters? Stores name of JSON file with params.
+    parser.add_argument('-s', '--search', action='store', default=None) # search on hyperparameters? Stores name of JSON file with params.
+    parser.add_argument('-l', '--load_model', action='store', default=None) # load existing model from .joblib file?
+    parser.add_argument('-f','--fields_list', nargs='+', action='store', default=['W01','W02','W03','W04']) # list of HSC fields
     parser.add_argument('-r', '--random_state', action='store', default=42, type= int) # for train-test split
     parser.add_argument('--min_n500', action='store', default=None, type= float) # minimum for cluster n500?
     parser.add_argument('--max_n500', action='store', default=None, type= float) # maximum for cluster n500?
@@ -262,6 +270,8 @@ if __name__ == "__main__":
     
     model_json = parser.parse_args().model
     search_json = parser.parse_args().search   
+    load_model = parser.parse_args().load_model  
+    fields_list = parser.parse_args().fields_list
     random_state = parser.parse_args().random_state
     min_n500 = parser.parse_args().min_n500
     max_n500 = parser.parse_args().max_n500
@@ -269,11 +279,11 @@ if __name__ == "__main__":
     max_z = parser.parse_args().max_z
     
     # prepare data
-    data = read_data()
+    data = read_data(fields_list)
     if any(val != None for val in [min_n500, max_n500, min_z, max_z]):
         data = z_n500_limits(data, min_z, max_z, min_n500, max_n500) 
     features,label = features_labels(df=data)
-    data = undersample(data, features, label) # this is the only balancing strategy i have tried so far...
+    # data = undersample(data, features, label) # this is the only balancing strategy i have tried so far...
     training,testing = split(df=data, lab=label, ran_state=random_state)
     
     # make model
@@ -283,13 +293,23 @@ if __name__ == "__main__":
     # search on hyper parameters?
     if search_json:
         rf_model = params_search(search_json, rf_model, data, features, label)
-        write_report(rf_model, testing, features, label, f'metrics/{search_json[:-5]}.txt')
-        plot_report(rf_model, testing, features, label, f'metrics/{search_json[:-5]}.png')
-        plot_importances(rf_model, features, f'metrics/importances_{search_json[:-5]}.png')
+        name = search_json[:-5]
 
-    # test a model?
+    # train and test a model?
     if model_json:
         rf_model = train_test_model(model_json, rf_model, data, features, label)
-        write_report(rf_model, testing, features, label, f'metrics/{model_json[:-5]}.txt')
-        plot_report(rf_model, testing, features, label, f'metrics/{model_json[:-5]}.png')
-        plot_importances(rf_model, features, f'metrics/importances_{model_json[:-5]}.png')
+        name = model_json[:-5]
+        
+    # load model?
+    if load_model:
+        rf_model = joblib.load(load_model)
+        name = load_model[:-5]
+
+    # tests
+    write_report(rf_model, testing, features, label, f'metrics/{name}.txt', parser.parse_args().__dict__)
+    plot_report(rf_model, testing, features, label, f'metrics/{name}.png')
+    plot_importances(rf_model, features, f'metrics/importances_{name}.png')
+
+    # save model
+    if not load_model:
+        joblib.dump(rf_model, f'saved_models/{name}.joblib')

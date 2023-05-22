@@ -9,7 +9,7 @@ DATA/scripts/sql_scripts/scripts_and_data/2-matched-ids/*
 DATA/scripts/sql_scripts/scripts_and_data/3-joined-mem-gal/*
 DATA/scripts/sql_scripts/scripts_and_data/4-sql-cols/*.fits
 DATA/old/
-NN/batch.bat
+batch*.bat
 NN/metrics/old/
 NN/metrics/1-test_architectures.txt
 SVM/svm.py
