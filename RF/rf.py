@@ -3,6 +3,7 @@ Random forests hyper parameter search and model testing.
 
 From command line: python rf.py [-m model.json] [-s search.json] [-l model.joblib] [-f W01 W02 W03] [-r 42]
                                 [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+                                [--feat_max feature value] [--feat_min feature value]
 
 Options:
     -m     Train and test a model with hyper parameters given in  a JSON file. Save metrics.
@@ -12,6 +13,8 @@ Options:
     -r     Change random_state for training-testing split (it's set to a fixed number by default)
     --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
     --min_z, --max            Minimum and maximum for cluster's z. Default: None
+    --feat_max                Limit feature to max. value? (Can be used more than once)
+    --feat_min                Limit feature to min. value? (Can be used more than once)
 
 Test results are saved into a "metrics" directory. Searches results are saved into "search_results".
 The features to be used are listed in features.txt
@@ -77,6 +80,25 @@ def z_n500_limits(df, mini_z = None, maxi_z = None, mini_n500 = None, maxi_n500 
     
     return df
     
+def feature_limits(df: pd.DataFrame, max_dict: dict, min_dict: dict):
+    conds = []
+    for key in max_dict.keys():
+        conds.append((df[key] <= float(max_dict[key])))
+    for key in min_dict.keys():
+        conds.append((df[key] >= float(min_dict[key])))
+    
+    for c in conds:
+        df = df[c]
+
+    # print number of members
+    n_mem = df[df.member == 1].shape[0]
+    n_no = df[df.member == 0].shape[0]
+    n = df.shape[0]
+    print ('Members after feature limits: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
+    print ('Non members feature limits: {} ({:.2f}%)'.format(n_no, n_no/n*100))
+    print('-'*70)
+    return df
+
 def split(df, lab, ran_state):
     
     # split into training and testing samples. 
@@ -267,6 +289,9 @@ if __name__ == "__main__":
     parser.add_argument('--max_n500', action='store', default=None, type= float) # maximum for cluster n500?
     parser.add_argument('--min_z', action='store', default=None, type= float) # minimum for cluster z?
     parser.add_argument('--max_z', action='store', default=None, type= float) # maximum for cluster z?
+    parser.add_argument('--feat_max', action='append', default=[], nargs='+') #limit feature to max. value? Use as --feat_max feature value
+    parser.add_argument('--feat_min', action='append', default=[], nargs='+') #limit feature to min. value? Use as --feat_min feature value
+
     
     model_json = parser.parse_args().model
     search_json = parser.parse_args().search   
@@ -277,12 +302,16 @@ if __name__ == "__main__":
     max_n500 = parser.parse_args().max_n500
     min_z = parser.parse_args().min_z
     max_z = parser.parse_args().max_z
+    feat_max = dict(parser.parse_args().feat_max)
+    feat_min = dict(parser.parse_args().feat_min)
     
     # prepare data
     data = read_data(fields_list)
     if any(val != None for val in [min_n500, max_n500, min_z, max_z]):
         data = z_n500_limits(data, min_z, max_z, min_n500, max_n500) 
     features,label = features_labels(df=data)
+    if any([feat_max, feat_min]):
+        data = feature_limits(data, feat_max, feat_min)
     # data = undersample(data, features, label) # this is the only balancing strategy i have tried so far...
     training,testing = split(df=data, lab=label, ran_state=random_state)
     

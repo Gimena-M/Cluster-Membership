@@ -17,3 +17,4 @@ SVM/random_search.json
 .ipynb_checkpoints
 .vscode
 __pycache__
+test.py

@@ -2,6 +2,8 @@ model_tests.py trains and tests a NN model that preddicts cluster membership.
 
 From command line: python model_tests.py model [-e] [-f W01 W02 W03] [-r 42] [-t] [-bt] 
                                         [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+                                        [--feat_max feature value] [--feat_min feature value]                                        
+
 
 Arguments:
     model  .py file with model parameters (has to be in the same directory as model_tests.py). Without extension.
@@ -13,6 +15,8 @@ Options:
     -bt    Compute thresholds that maximize F-Score or G-Means
     --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
     --min_z, --max_z          Minimum and maximum for cluster's z. Default: None
+    --feat_max                Limit feature to max. value? (Can be used more than once)
+    --feat_min                Limit feature to min. value? (Can be used more than once)
 
 
 The .py file with model parameters has:

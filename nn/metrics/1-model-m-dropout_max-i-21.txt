@@ -26,30 +26,31 @@ Non-trainable params: 119
 _________________________________________________________________
 
 
-model_name: 1-model-m-dropout-z_11_to_12 
+model_name: 1-model-m-dropout_max-i-21 
 model_exists: False 
-fields_list: ['W01', 'W02', 'W03'] 
+fields_list: ['W01', 'W02', 'W03', 'W04'] 
 random_state: 42 
 thresholds: False 
 best_thresholds: False 
 min_n500: None 
 max_n500: None 
-min_z: 0.11 
-max_z: 0.12 
+min_z: None 
+max_z: None 
+feat_max: [['i_cmodel_mag', '21']] 
+feat_min: [] 
 ----------------------------------------------------------------------
-Optimizer: <keras.optimizers.optimizer_v2.adam.Adam object at 0x00000186C96EE740> 
-Loss function: <keras.losses.BinaryCrossentropy object at 0x00000186CA33A950> 
-Notes: 
+Optimizer: Adam 
+Loss function: binary_crossentropy 
 ----------------------------------------------------------------------
-Loss on test dataset: 0.3192 
-ROC curve AUC: 0.9543010752688171
-Precision-recall AUC: 0.48025633640552995
+Loss on test dataset: 0.5881 
+ROC curve AUC: 0.7387852212760457
+Precision-recall AUC: 0.6145855434696277
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 
-           0       0.99      0.87      0.93       124
-           1       0.24      0.83      0.37         6
+           0       0.77      0.67      0.72     11628
+           1       0.57      0.69      0.63      7472
 
-    accuracy                           0.87       130
-   macro avg       0.61      0.85      0.65       130
-weighted avg       0.96      0.87      0.90       130
+    accuracy                           0.68     19100
+   macro avg       0.67      0.68      0.67     19100
+weighted avg       0.69      0.68      0.68     19100

@@ -3,6 +3,9 @@ Create, train and test a NN model that (attempts to) preddict cluster membership
 
 From command line: python model_tests.py model.py [-e] [-f W01 W02 W03] [-r 42] [-t] [-bt]
                                         [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+                                        [--feat_max feature value] [--feat_min feature value]
+
+
 Arguments:
     .py file with model parameters (has to be in the same directory as this file).
 Options:
@@ -13,6 +16,8 @@ Options:
     -bt    Compute thresholds that maximize F-Score or G-Means
     --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
     --min_z, --max            Minimum and maximum for cluster's z. Default: None
+    --feat_max                Limit feature to max. value? (Can be used more than once)
+    --feat_min                Limit feature to min. value? (Can be used more than once)
 
 The .py file with model parameters has:
     layers: list of layers for the network
@@ -68,7 +73,7 @@ def features_labels(df):
     return feat,lab
 
 def z_n500_limits(df, mini_z = None, maxi_z = None, mini_n500 = None, maxi_n500 = None):
-    # Select galaxies near clusters in a z and n500 range...
+    # Select clusters in a z and n500 range...
     # df has a column 'id_cl_near', with the id of the nearest cluster. 
     df_cl = pd.read_table('../DATA/clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
     
@@ -86,7 +91,26 @@ def z_n500_limits(df, mini_z = None, maxi_z = None, mini_n500 = None, maxi_n500 
     df = df[df['id_cl_near'].isin(df_cl.id_cl)]
     
     return df
+
+def feature_limits(df: pd.DataFrame, max_dict: dict, min_dict: dict):
+    conds = []
+    for key in max_dict.keys():
+        conds.append((df[key] <= float(max_dict[key])))
+    for key in min_dict.keys():
+        conds.append((df[key] >= float(min_dict[key])))
     
+    for c in conds:
+        df = df[c]
+
+    # print number of members
+    n_mem = df[df.member == 1].shape[0]
+    n_no = df[df.member == 0].shape[0]
+    n = df.shape[0]
+    print ('Members after feature limits: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
+    print ('Non members feature limits: {} ({:.2f}%)'.format(n_no, n_no/n*100))
+    print('-'*70)
+    return df
+
 def split(df, lab, ran_state):
     
     # split into training, testing and validation samples. 
@@ -101,7 +125,7 @@ def split(df, lab, ran_state):
     
     return train,val,test
     
-def write_report(pred, model, test, feat, lab, filename, args):
+def write_report(pred, model: tf.keras.Sequential, test, feat, lab, filename, args):
     
     # write metrics into file: loss, auc, classification report
     from sklearn.metrics import auc, classification_report, roc_curve, precision_recall_curve
@@ -120,8 +144,8 @@ def write_report(pred, model, test, feat, lab, filename, args):
         for key in args:
             file.write(f'{key}: {args[key]} \n')
         file.write('-'*70 + '\n')
-        file.write('Optimizer: {} \n'.format(model.optimizer.na))
-        file.write('Loss function: {} \n'.format(model.loss))
+        file.write('Optimizer: {} \n'.format(model.optimizer._name))
+        file.write('Loss function: {} \n'.format(model.loss.name))
         file.write('-'*70 + '\n')
         file.write('Loss on test dataset: {:.4g} \n'.format(test_loss))
         file.write('ROC curve AUC: {}\n'.format(auc(fpr, tpr)))
@@ -311,6 +335,8 @@ if __name__ == "__main__":
     parser.add_argument('--max_n500', action='store', default=None, type= float) # maximum for cluster n500?
     parser.add_argument('--min_z', action='store', default=None, type= float) # minimum for cluster z?
     parser.add_argument('--max_z', action='store', default=None, type= float) # maximum for cluster z?
+    parser.add_argument('--feat_max', action='append', default=[], nargs='+') #limit feature to max. value? Use as --feat_max feature value
+    parser.add_argument('--feat_min', action='append', default=[], nargs='+') #limit feature to min. value? Use as --feat_min feature value
     
     model_name = parser.parse_args().model_name
     model_exists = parser.parse_args().model_exists  
@@ -322,12 +348,16 @@ if __name__ == "__main__":
     max_n500 = parser.parse_args().max_n500
     min_z = parser.parse_args().min_z
     max_z = parser.parse_args().max_z
+    feat_max = dict(parser.parse_args().feat_max)
+    feat_min = dict(parser.parse_args().feat_min)
     
     # prepare data
     data = read_data(fields_list)
     if any(val != None for val in [min_n500, max_n500, min_z, max_z]):
         data = z_n500_limits(data, min_z, max_z, min_n500, max_n500) 
     features,label = features_labels(df=data)
+    if any([feat_max, feat_min]):
+        data = feature_limits(data, feat_max, feat_min)
     training,validation,testing = split(df=data, lab=label, ran_state=random_state)
     
     
@@ -369,7 +399,7 @@ if __name__ == "__main__":
             epochs = epochs,
             batch_size = 4096
             )
-    
+        
         # class imbalance?
         match balance:
             case None:
@@ -384,7 +414,6 @@ if __name__ == "__main__":
             case _:
                 raise ValueError("Invalid value for 'balance'")
                  
-  
     # load best model and history from files
     nn_model = tf.keras.models.load_model(f'saved_models/{model_name}.h5')
     history = pd.read_csv(f'saved_models/{model_name}_log.csv')

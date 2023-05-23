@@ -2,6 +2,7 @@ rf.py trains and tests a Random Forest model for cluster membership prediction, 
 
 From command line: python rf.py [-m model.json] [-s search.json] [-l model.joblib] [-f W01 W02 W03] [-r 42]
                                 [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+                                [--feat_max feature value] [--feat_min feature value]
 
 Options:
     -m     Train and test a model with hyper parameters given in a JSON file. Save metrics.
@@ -11,6 +12,8 @@ Options:
     -r     Change random_state for training-testing split (it's set to a fixed number by default)
     --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
     --min_z, --max            Minimum and maximum for cluster's z. Default: None
+    --feat_max                Limit feature to max. value? (Can be used more than once)
+    --feat_min                Limit feature to min. value? (Can be used more than once)
 
 Test results are saved into the "metrics" directory. Searches results are saved into "search_results".
 The features to be used are listed in features.txt
