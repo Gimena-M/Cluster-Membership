@@ -5,6 +5,7 @@ Arguments: name of the .dat file from Wen&Han, and of the .fits file with the qu
 """
 
 import pandas as pd
+import numpy as np
 from astropy.cosmology import FlatLambdaCDM
 from astropy import coordinates
 from astropy import units as u
@@ -114,8 +115,18 @@ for i,ind in enumerate(index):
     df_gal_short = pd.concat([df_gal_short, df_a], axis = 0)
     
 df_gal = df_gal_short
+
+# some galaxies are near more than one cluster. Those rows will be duplicate. Store near clusters' ids as a list, and drop duplicates.
+dups =  df_gal.duplicated(subset=['ra','dec'], keep=False)
+df_gal['id_cl_near'] = [np.unique([id for id in df_gal[(df_gal.ra == gal.ra) & (df_gal.dec == gal.dec) ]['id_cl_near']]) 
+          if d else [int(gal['id_cl_near'])] 
+          for d,(_,gal) in zip(dups,df_gal.iterrows()) ]
+
+#convert that list to a string, so that it can be saved in a CSV file. When using it, use eval().
+df_gal['id_cl_near'] = '[' + df_gal['id_cl_near'].apply(lambda x: ','.join(map(str, x))) + ']'
+
 df_gal = df_gal.drop_duplicates(subset = ['ra','dec'])
-del df_gal_short,df_a    
+del df_gal_short,df_a,dups    
 # df_gal = df_gal.iloc[np.concatenate(index)].drop_duplicates()
 
 

@@ -76,7 +76,9 @@ def z_n500_limits(df, mini_z = None, maxi_z = None, mini_n500 = None, maxi_n500 
         cond = (cond) & (df_cl.n500_cl <= maxi_n500)
         
     df_cl = df_cl[cond]  
-    df = df[df['id_cl_near'].isin(df_cl.id_cl)]
+    # df = df[df['id_cl_near'].isin(df_cl.id_cl)]
+    df['id_cl_near'] = [eval(s) for s in df['id_cl_near']]
+    df = df[[any([id in df_cl['id_cl'].values for id in gal.id_cl_near]) for _,gal in df.iterrows()]]
     
     return df
     
