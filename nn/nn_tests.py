@@ -1,7 +1,7 @@
 """
 Create, train and test a NN model that (attempts to) preddict cluster membership.
 
-From command line: python model_tests.py model.py [-e] [-f W01 W02 W03] [-r 42] [-t] [-bt]
+From command line: python model_tests.py model.py [-e] [-f W01 W02 W03] [-zf] [-r 42] [-t] [-bt]
                                         [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
                                         [--feat_max feature value] [--feat_min feature value]
 
@@ -11,6 +11,7 @@ Arguments:
 Options:
     -e     If model has already been saved and trained, load existing model and training history.
     -f     List of HSC fields (default: W01, W02, W03 & W04)
+    -zf    Use tables where galaxies were removed if their redshift differed significantly from the redshift of the nearest BCG.
     -r     Change random_state for training-validation-testing split (it's set to a fixed number by default)
     -t     Test different thresholds
     -bt    Compute thresholds that maximize F-Score or G-Means
@@ -39,11 +40,14 @@ import math
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def read_data(fields):
+def read_data(fields: list, z_fil: bool = False):
     # read and join tables
     li = []
     for fi in fields:
-        d = pd.read_csv(f'../DATA/clean-HSC-unWISE-{fi}.csv')
+        if z_fil:
+            d = pd.read_csv(f'../DATA/z-filtered_clean-HSC-unWISE-{fi}.csv')
+        else:
+            d = pd.read_csv(f'../DATA/clean-HSC-unWISE-{fi}.csv')
         li.append(d.drop(columns = [f for f in d.columns if ('isnull' in f)]))
     df = pd.concat(li, axis = 'rows')
     
@@ -330,6 +334,7 @@ if __name__ == "__main__":
     parser.add_argument('model_name') # file with model, given as argument in command line without .py extension
     parser.add_argument('-e', '--model_exists', action='store_true') # does the model already exist?
     parser.add_argument('-f','--fields_list', nargs='+', action='store', default=['W01','W02','W03', 'W04']) # list of HSC fields
+    parser.add_argument('-zf', '--z_filtered', action='store_true') # use z filtered tables? (where galaxies with z - z_bcg > dz were removed)
     parser.add_argument('-r', '--random_state', action='store', default=42, type= int) # for train-val-test split
     parser.add_argument('-t', '--thresholds', action='store_true') # test different thresholds?
     parser.add_argument('-bt', '--best_thresholds', action='store_true') # check best thresholds?
@@ -343,6 +348,7 @@ if __name__ == "__main__":
     model_name = parser.parse_args().model_name
     model_exists = parser.parse_args().model_exists  
     fields_list = parser.parse_args().fields_list  
+    z_filtered = parser.parse_args().z_filtered
     random_state = parser.parse_args().random_state
     thresholds = parser.parse_args().thresholds 
     best_thresholds = parser.parse_args().best_thresholds 
@@ -354,7 +360,7 @@ if __name__ == "__main__":
     feat_min = dict(parser.parse_args().feat_min)
     
     # prepare data
-    data = read_data(fields_list)
+    data = read_data(fields_list, z_filtered)
     if any(val != None for val in [min_n500, max_n500, min_z, max_z]):
         data = z_n500_limits(data, min_z, max_z, min_n500, max_n500) 
     features,label = features_labels(df=data)

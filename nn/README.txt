@@ -1,6 +1,6 @@
 model_tests.py trains and tests a NN model that preddicts cluster membership.
 
-From command line: python model_tests.py model [-e] [-f W01 W02 W03] [-r 42] [-t] [-bt] 
+From command line: python model_tests.py model [-e] [-f W01 W02 W03][-zf] [-r 42] [-t] [-bt]
                                         [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
                                         [--feat_max feature value] [--feat_min feature value]                                        
 
@@ -10,6 +10,7 @@ Arguments:
 Options:
     -e     If model has already been saved and trained, load existing model and training history.
     -f     List of HSC fields (default: W01, W02, W03 & W04)
+    -zf    Use tables where galaxies were removed if their redshift differed significantly from the redshift of the nearest BCG.
     -r     Change random_state for training-validation-test split (it's set to a fixed number by default)
     -t     Test different thresholds
     -bt    Compute thresholds that maximize F-Score or G-Means
@@ -42,4 +43,6 @@ Directories in the metrics and saved model folders contain the results of variou
 	3-z_lims: trained and tested a model with galaxies around BCGs with different maximum redshifts (None, 1.0, 0.5, and 0.25).
 	4-z-0.7: tested different architectures, training with galaxies around BCGs at up to z = 0.7
     5-z_steps: trained a model with BCGs in redshift ranges of size 0.1.
+    6-mag_i_lims: trained a model with galaxies with i magnitude lower than 19, 21, and with no limit.
+    7-filtered_z: compared performance using tables with all galaxies, and tables with only galaxies within a z range around the nearest BCG ("z_filtered")
 
