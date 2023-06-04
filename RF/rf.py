@@ -1,21 +1,26 @@
 """
 Random forests hyper parameter search and model testing.
 
-From command line: python rf.py [-m model.json] [-s search.json] [-l model.joblib] [-f W01 W02 W03] [-r 42]
-                                [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+From command line: python rf.py features.txt [-m model.json] [-s search.json] [-l model.joblib] [-f W01 W02 W03] [-zf] 
+                                [-r 42] [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
                                 [--feat_max feature value] [--feat_min feature value]
 
+                                
+Arguments:
+    .txt file with features in the DATA directory
 Options:
     -m     Train and test a model with hyper parameters given in  a JSON file. Save metrics.
     -s     Search on hyper parameters, with distributions given in  a JSON file. Save metrics for best model.
     -l     Load existing model.
     -f     List of HSC fields (default: W01, W02, W03 & W04) 
+    -zf    Use tables where galaxies were removed if their redshift differed significantly from the redshift of the nearest BCG.
     -r     Change random_state for training-testing split (it's set to a fixed number by default)
     --min_n500, --max_n500    Minimum and maximum for cluster's n500. Default: None
     --min_z, --max            Minimum and maximum for cluster's z. Default: None
     --feat_max                Limit feature to max. value? (Can be used more than once)
     --feat_min                Limit feature to min. value? (Can be used more than once)
 
+    
 Test results are saved into a "metrics" directory. Searches results are saved into "search_results".
 The features to be used are listed in features.txt
 JSON files have to be in the same directory as this script.
@@ -27,19 +32,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def read_data(fields):
+def read_data(fields: list, z_fil: bool = False):
     # read and join tables
     li = []
     for fi in fields:
-        d = pd.read_csv(f'../DATA/clean-HSC-unWISE-{fi}.csv')
+        if z_fil:
+            d = pd.read_csv(f'../DATA/z-filtered_clean-HSC-unWISE-{fi}.csv')
+        else:
+            d = pd.read_csv(f'../DATA/clean-HSC-unWISE-{fi}.csv')
         li.append(d.drop(columns = [f for f in d.columns if ('isnull' in f)]))
     df = pd.concat(li, axis = 'rows')    
     return df
        
-def features_labels(df):  
+def features_labels(df: pd.DataFrame, feat_file: str):  
     
     # read features list
-    with open('../DATA/features1.txt') as file:
+    with open(f'../DATA/{feat_file}') as file:
         feat = file.read().splitlines()
     lab = 'member'
     
@@ -275,10 +283,12 @@ if __name__ == "__main__":
     import joblib
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument('features_txt') # txt file with features
     parser.add_argument('-m', '--model', action='store', default=None) # test a model? Stores name of JSON file with params.
     parser.add_argument('-s', '--search', action='store', default=None) # search on hyperparameters? Stores name of JSON file with params.
     parser.add_argument('-l', '--load_model', action='store', default=None) # load existing model from .joblib file?
     parser.add_argument('-f','--fields_list', nargs='+', action='store', default=['W01','W02','W03','W04']) # list of HSC fields
+    parser.add_argument('-zf', '--z_filtered', action='store_true') # use z filtered tables? (where galaxies with z - z_bcg > dz were removed)
     parser.add_argument('-r', '--random_state', action='store', default=42, type= int) # for train-test split
     parser.add_argument('--min_n500', action='store', default=None, type= float) # minimum for cluster n500?
     parser.add_argument('--max_n500', action='store', default=None, type= float) # maximum for cluster n500?
@@ -287,11 +297,12 @@ if __name__ == "__main__":
     parser.add_argument('--feat_max', action='append', default=[], nargs='+') #limit feature to max. value? Use as --feat_max feature value
     parser.add_argument('--feat_min', action='append', default=[], nargs='+') #limit feature to min. value? Use as --feat_min feature value
 
-    
+    features_txt = parser.parse_args().features_txt
     model_json = parser.parse_args().model
     search_json = parser.parse_args().search   
     load_model = parser.parse_args().load_model  
     fields_list = parser.parse_args().fields_list
+    z_filtered = parser.parse_args().z_filtered
     random_state = parser.parse_args().random_state
     min_n500 = parser.parse_args().min_n500
     max_n500 = parser.parse_args().max_n500
@@ -301,10 +312,10 @@ if __name__ == "__main__":
     feat_min = dict(parser.parse_args().feat_min)
     
     # prepare data
-    data = read_data(fields_list)
+    data = read_data(fields_list, z_filtered)
     if any(val != None for val in [min_n500, max_n500, min_z, max_z]):
         data = z_n500_limits(data, min_z, max_z, min_n500, max_n500) 
-    features,label = features_labels(df=data)
+    features,label = features_labels(df=data, feat_file=features_txt)
     if any([feat_max, feat_min]):
         data = feature_limits(data, feat_max, feat_min)
     # data = undersample(data, features, label) # this is the only balancing strategy i have tried so far...

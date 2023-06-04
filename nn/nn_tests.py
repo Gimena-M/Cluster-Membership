@@ -1,13 +1,14 @@
 """
 Create, train and test a NN model that (attempts to) preddict cluster membership.
 
-From command line: python model_tests.py model.py [-e] [-f W01 W02 W03] [-zf] [-r 42] [-t] [-bt]
-                                        [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+From command line: python nn_tests.py features.txt model.py [-e] [-f W01 W02 W03] [-zf] [-r 42] 
+                                        [-t] [-bt] [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
                                         [--feat_max feature value] [--feat_min feature value]
 
 
 Arguments:
-    .py file with model parameters (has to be in the same directory as this file).
+    .txt file with features in the DATA directory
+    .py file with model parameters (without extension, has to be in the same directory as this file), or name of model.
 Options:
     -e     If model has already been saved and trained, load existing model and training history.
     -f     List of HSC fields (default: W01, W02, W03 & W04)
@@ -28,7 +29,6 @@ The .py file with model parameters has:
     balance: how to deal with class imbalance. Can be 'weights', 'SMOTE' or None
 
 Results are saved into a "metrics" directory.
-The features to be used are listed in features.txt
 """
 
 
@@ -52,10 +52,10 @@ def read_data(fields: list, z_fil: bool = False):
     df = pd.concat(li, axis = 'rows')    
     return df
        
-def features_labels(df):  
+def features_labels(df: pd.DataFrame, feat_file: str):  
     
     # read features list
-    with open('../DATA/features1.txt') as file:
+    with open(f'../DATA/{feat_file}') as file:
         feat = file.read().splitlines()
     lab = 'member'
     
@@ -324,6 +324,7 @@ if __name__ == "__main__":
     
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument('features_txt') # txt file with features
     parser.add_argument('model_name') # file with model, given as argument in command line without .py extension
     parser.add_argument('-e', '--model_exists', action='store_true') # does the model already exist?
     parser.add_argument('-f','--fields_list', nargs='+', action='store', default=['W01','W02','W03', 'W04']) # list of HSC fields
@@ -338,6 +339,7 @@ if __name__ == "__main__":
     parser.add_argument('--feat_max', action='append', default=[], nargs='+') #limit feature to max. value? Use as --feat_max feature value
     parser.add_argument('--feat_min', action='append', default=[], nargs='+') #limit feature to min. value? Use as --feat_min feature value
     
+    features_txt = parser.parse_args().features_txt
     model_name = parser.parse_args().model_name
     model_exists = parser.parse_args().model_exists  
     fields_list = parser.parse_args().fields_list  
@@ -356,7 +358,7 @@ if __name__ == "__main__":
     data = read_data(fields_list, z_filtered)
     if any(val != None for val in [min_n500, max_n500, min_z, max_z]):
         data = z_n500_limits(data, min_z, max_z, min_n500, max_n500) 
-    features,label = features_labels(df=data)
+    features,label = features_labels(df=data, feat_file=features_txt)
     if any([feat_max, feat_min]):
         data = feature_limits(data, feat_max, feat_min)
     training,validation,testing = split(df=data, lab=label, ran_state=random_state)

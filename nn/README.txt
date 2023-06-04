@@ -1,12 +1,14 @@
 model_tests.py trains and tests a NN model that preddicts cluster membership.
 
-From command line: python model_tests.py model [-e] [-f W01 W02 W03][-zf] [-r 42] [-t] [-bt]
-                                        [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
-                                        [--feat_max feature value] [--feat_min feature value]                                        
+From command line: python nn_tests.py features.txt model.py [-e] [-f W01 W02 W03] [-zf] [-r 42] 
+                                        [-t] [-bt] [--min_n500 0] [--max_n500 60] [--min_z 0] [--max_z 1]
+                                        [--feat_max feature value] [--feat_min feature value]
+                 
 
 
 Arguments:
-    model  .py file with model parameters (has to be in the same directory as model_tests.py). Without extension.
+    .txt file with features in the DATA directory
+    .py file with model parameters (without extension, has to be in the same directory as nn_tests.py), or name of model.
 Options:
     -e     If model has already been saved and trained, load existing model and training history.
     -f     List of HSC fields (default: W01, W02, W03 & W04)
@@ -29,7 +31,6 @@ The .py file with model parameters has:
 There's a bunch of models in the "models_scripts" directory.
 
 Results are saved into a "metrics" directory. For each model, there's an image with plots and a text file with metrics.
-The features to be used are listed in features.txt
 
 Models are saved into the "saved_models" directory.
 
@@ -45,4 +46,4 @@ Directories in the metrics and saved model folders contain the results of variou
     5-z_steps: trained a model with BCGs in redshift ranges of size 0.1.
     6-mag_i_lims: trained a model with galaxies with i magnitude lower than 19, 21, and with no limit.
     7-filtered_z: compared performance using tables with all galaxies, and tables with only galaxies within a z range around the nearest BCG ("z_filtered")
-
+    8-features: compared performance using different sets of features.
