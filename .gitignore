@@ -3,11 +3,6 @@ DATA/scripts/clean_data_script/clean.ipynb
 DATA/scripts/sql_scripts/scripts_and_data/OTRO/
 DATA/scripts/sql_scripts/scripts_and_data/notes.txt
 DATA/scripts/sql_scripts/cred.txt
-DATA/scripts/sql_scripts/scripts_and_data/0-Wen&Han/*.dat
-DATA/scripts/sql_scripts/scripts_and_data/1-sql-ids/*.fits
-DATA/scripts/sql_scripts/scripts_and_data/2-matched-ids/*
-DATA/scripts/sql_scripts/scripts_and_data/3-joined-mem-gal/*
-DATA/scripts/sql_scripts/scripts_and_data/4-sql-cols/*.fits
 DATA/old/
 batch*.bat
 NN/metrics/old/
@@ -18,3 +13,6 @@ SVM/random_search.json
 .vscode
 __pycache__
 test.py
+*HSC-unWISE*.csv
+*.dat
+*.fits

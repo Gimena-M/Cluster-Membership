@@ -33,14 +33,7 @@ def read_data(fields):
     for fi in fields:
         d = pd.read_csv(f'../DATA/clean-HSC-unWISE-{fi}.csv')
         li.append(d.drop(columns = [f for f in d.columns if ('isnull' in f)]))
-    df = pd.concat(li, axis = 'rows')
-    
-    # add colors
-    df['gr'] = df['g_cmodel_mag'] - df['r_cmodel_mag']
-    df['ri'] = df['r_cmodel_mag'] - df['i_cmodel_mag']
-    df['iz'] = df['i_cmodel_mag'] - df['z_cmodel_mag']
-    df['zy'] = df['z_cmodel_mag'] - df['y_cmodel_mag']
-    
+    df = pd.concat(li, axis = 'rows')    
     return df
        
 def features_labels(df):  

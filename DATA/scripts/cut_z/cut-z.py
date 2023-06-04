@@ -7,6 +7,7 @@ Argument: csv table
 """
 
 import pandas as pd
+import numpy as np
 import sys
 
 file_df = sys.argv[1]
@@ -24,7 +25,7 @@ df_cl = df_cl[(df_cl['id_cl'].isin(df.id_cl_near)) | (df_cl['id_cl'].isin(df.id_
 
 # evaluate the column "id_cl_near" (it's a list stored as a string, has the ids of the nearest clusters)
 # it's a list and not a single value because some galaxies were near 2 or more clusters
-df['id_cl_near'] = [eval(s) for s in df['id_cl_near']]
+df['id_cl_near'] = [np.array(eval(s)) for s in df['id_cl_near']]
 
 
 

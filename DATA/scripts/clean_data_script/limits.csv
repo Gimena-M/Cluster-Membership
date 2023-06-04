@@ -50,3 +50,9 @@ r_sdssshape_shape22sigma;0;0.26
 i_sdssshape_shape22sigma;0;0.2
 z_sdssshape_shape22sigma;0;0.2
 y_sdssshape_shape22sigma;0;0.26
+gr;-1.5;4.5
+ri;-1;3
+iz;-1.4;2
+zy;-1.5;2.2
+W1g;-13;3
+W1i;-7;3
