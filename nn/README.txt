@@ -47,3 +47,4 @@ Directories in the metrics and saved model folders contain the results of variou
     6-mag_i_lims: trained a model with galaxies with i magnitude lower than 19, 21, and with no limit.
     7-filtered_z: compared performance using tables with all galaxies, and tables with only galaxies within a z range around the nearest BCG ("z_filtered")
     8-features: compared performance using different sets of features.
+    9-mass_lims: compared performance using all galaxies and using only galaxies with log_st_mass > 10.5
