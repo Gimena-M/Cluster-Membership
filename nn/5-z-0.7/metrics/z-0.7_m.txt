@@ -1,0 +1,51 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization (Normalizatio  (None, 61)               123       
+ n)                                                              
+                                                                 
+ dense_4 (Dense)             (None, 64)                3968      
+                                                                 
+ dense_5 (Dense)             (None, 64)                4160      
+                                                                 
+ dense_6 (Dense)             (None, 1)                 65        
+                                                                 
+=================================================================
+Total params: 8,316
+Trainable params: 8,193
+Non-trainable params: 123
+_________________________________________________________________
+
+
+features_txt: all_features.txt 
+fields_list: ['W01', 'W02', 'W03', 'W04'] 
+z_filtered: False 
+min_n500: None 
+max_n500: None 
+min_z: None 
+max_z: 0.7 
+feat_max: {} 
+feat_min: {} 
+random_state: 42 
+balance: weights 
+----------------------------------------------------------------------
+epochs: 60 
+normalization: True 
+weights: True 
+----------------------------------------------------------------------
+Optimizer: Adam 
+Loss function: binary_crossentropy 
+----------------------------------------------------------------------
+Loss on test dataset: 0.4652 
+ROC curve AUC: 0.8522081131460986
+Precision-recall AUC: 0.6468154783721589
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.92      0.71      0.80     27151
+           1       0.54      0.84      0.66     10766
+
+    accuracy                           0.75     37917
+   macro avg       0.73      0.78      0.73     37917
+weighted avg       0.81      0.75      0.76     37917

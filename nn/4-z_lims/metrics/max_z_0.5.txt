@@ -1,0 +1,53 @@
+Model: "sequential_3"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization_3 (Normalizat  (None, 61)               123       
+ ion)                                                            
+                                                                 
+ dense_9 (Dense)             (None, 64)                3968      
+                                                                 
+ dropout_3 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_10 (Dense)            (None, 128)               8320      
+                                                                 
+ dense_11 (Dense)            (None, 1)                 129       
+                                                                 
+=================================================================
+Total params: 12,540
+Trainable params: 12,417
+Non-trainable params: 123
+_________________________________________________________________
+
+
+features_txt: all_features.txt 
+fields_list: ['W01', 'W02', 'W03', 'W04'] 
+z_filtered: False 
+min_n500: None 
+max_n500: None 
+min_z: None 
+max_z: 0.5 
+feat_max: {} 
+feat_min: {} 
+random_state: 42 
+balance: weights 
+----------------------------------------------------------------------
+epochs: 60 
+normalization: True 
+weights: True 
+----------------------------------------------------------------------
+Optimizer: Adam 
+Loss function: binary_crossentropy 
+----------------------------------------------------------------------
+Loss on test dataset: 0.3906 
+ROC curve AUC: 0.8966172476134363
+Precision-recall AUC: 0.6815725001943075
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.95      0.80      0.87     19530
+           1       0.56      0.87      0.68      5840
+
+    accuracy                           0.81     25370
+   macro avg       0.76      0.83      0.77     25370
+weighted avg       0.86      0.81      0.82     25370
