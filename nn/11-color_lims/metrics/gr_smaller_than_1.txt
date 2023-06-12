@@ -27,7 +27,7 @@ min_n500: None
 max_n500: None 
 min_z: None 
 max_z: None 
-feat_max: {'i_cmodel_mag': 19} 
+feat_max: {'gr': 1.0} 
 feat_min: {} 
 random_state: 42 
 balance: weights 
@@ -39,15 +39,15 @@ weights: True
 Optimizer: Adam 
 Loss function: binary_crossentropy 
 ----------------------------------------------------------------------
-Loss on test dataset: 0.5946 
-ROC curve AUC: 0.7477666041065576
-Precision-recall AUC: 0.6937078967968068
+Loss on test dataset: 0.6057 
+ROC curve AUC: 0.6925136010757713
+Precision-recall AUC: 0.2897738010273797
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 
-           0       0.74      0.66      0.70      1450
-           1       0.64      0.72      0.68      1231
+           0       0.91      0.51      0.66     18374
+           1       0.24      0.76      0.37      3730
 
-    accuracy                           0.69      2681
-   macro avg       0.69      0.69      0.69      2681
-weighted avg       0.69      0.69      0.69      2681
+    accuracy                           0.55     22104
+   macro avg       0.58      0.64      0.51     22104
+weighted avg       0.80      0.55      0.61     22104
