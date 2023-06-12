@@ -58,7 +58,7 @@ print('Removing outliers...', flush=True)
 # read limits 
 limits = dict()
 with open('limits.csv', mode = 'r') as file:
-    reader = csv.reader(file, delimiter=';')
+    reader = csv.reader(file, delimiter=',')
     next(reader, None) #skip header
     for i in reader:
         limits[i[0]] = (float(i[1]),float(i[2]))     
@@ -77,4 +77,5 @@ for f in features:
         
         
 print('Saving....', flush=True)
+df = df.drop_duplicates(subset= ['object_id'])
 df.to_csv('clean-'+file_df, index = False)

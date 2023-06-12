@@ -22,3 +22,4 @@ Contains tables with data, used by NN, RF, SVM and smote. Also contains scripts:
 
 Tables are also in https://drive.google.com/drive/folders/1z3me5bzOujSoPwNI5bzpuJ7LwGnnaSzX?usp=share_link
 (in case the Git LFS bandwidth or storage quota is exceeded.) Make sure to save them to the DATA directory.
+**Last Drive update: 12/06/23**
