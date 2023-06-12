@@ -2,7 +2,7 @@ This directory contains the following classes:
 * DataHandler: handles data reading and preparing.
 * ModelTrainer: trains a model. Superclass, not meant to be instantiated. Inherits to NNModelTrainer and RFModelTrainer.
 * ModelTester: tests a model. Superclass, not meant to be instantiated. Inherits to NNModelTester and RFModelTester.
-* NNModelController: creates NNModelTrainer and NNModelTester instances, and manages DataHandler.
+* RFModelController and NNModelController: simplifie the workflow by combining data handling, model training, and performance evaluation into one method call.
 
 Classes can be imported in scripts with:
 

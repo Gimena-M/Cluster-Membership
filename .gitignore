@@ -6,18 +6,10 @@ batch*.bat
 .ipynb_checkpoints
 .vscode
 __pycache__
-test.py
 *HSC-unWISE*.csv
 *.dat
 *.fits
 old
+RF/1-searches/saved_models/
 
-
-SVM/svm.py
-SVM/random_search.json
-SVM/metrics
-SVM/saved_models
-SVM/search_results
-tests
-model_2*
-*random_search---bcg*
+SVM/

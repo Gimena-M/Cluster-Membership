@@ -10,6 +10,7 @@ The main() method performs the tests used by most scripts. Its arguments are:
     * thresholds (list or None): List of thresholds to be tested. (default: None)
     * best_thresholds (bool): Compute thresholds that maximize F-Score or G-Means? (default: False)
     * extra_args (dict): Extra arguments to be saved in a txt file along with metrics. (default: {})
+    * sort_importances (bool): Sort features in descending order of importance when plotting feature importances? (default: True)
 
 File Saving:
     * Most plots are saved to a .png file.
@@ -32,11 +33,11 @@ class RFModelTester(ModelTester):
     cols: int = 3
     figsize: tuple = (16,4)
 
-    def main(self, thresholds: bool = False, best_thresholds: bool = False):
-        super().main(thresholds, best_thresholds)
-        self.plot_importances()
+    def main(self, thresholds: bool = False, best_thresholds: bool = False, extra_args: dict = {}, sort_importances: bool = True):
+        super().main(thresholds, best_thresholds, extra_args)
+        self.plot_importances(sort_importances= sort_importances)
 
-    def write_report(self):
+    def write_report(self, extra_args: dict = {}):
 
         # write metrics to file: score, auc, classification report
         from sklearn.metrics import auc, classification_report
@@ -49,6 +50,8 @@ class RFModelTester(ModelTester):
             file.write('-'*70 + '\n')
             for key in self.data.args():
                 file.write(f'{key}: {self.data.args()[key]} \n')
+            for key in extra_args:
+                file.write(f'{key}: {extra_args[key]} \n')
             file.write('-'*70 + '\n')
             file.write('Model score: {:.4g} \n'.format(model_score))
             file.write('ROC curve AUC: {}\n'.format(auc(self.fpr, self.tpr)))
@@ -56,12 +59,18 @@ class RFModelTester(ModelTester):
             file.write('-'*70 + '\n')
             file.write(classification_report(self.data.testing_labels(),self.predictions))
 
-    def plot_importances(self):
+    def plot_importances(self, sort_importances: bool = True):
         # save plot of feature importances
-        importances = np.sort(self.model.feature_importances_)[::-1]
-        sorted_feat = [x for _,x in sorted(zip(self.model.feature_importances_, self.data.features))][::-1]
 
-        plt.figure(figsize= (17, 10))
+        plt.figure(figsize= (16, 18))
+
+        if sort_importances:
+            importances = np.sort(self.model.feature_importances_)[::-1]
+            sorted_feat = [x for _,x in sorted(zip(self.model.feature_importances_, self.data.features))][::-1]
+            sns.barplot(x = importances, y = sorted_feat)
+        else:
+            sns.barplot(x = self.model.feature_importances_, y = self.data.features)
+       
         plt.grid()
-        sns.barplot(x = importances, y = sorted_feat)
         plt.savefig(f'metrics/importances_{self.name}.png', dpi=150, bbox_inches= 'tight')
+        plt.close()        

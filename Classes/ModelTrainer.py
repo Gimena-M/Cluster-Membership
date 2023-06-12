@@ -83,3 +83,6 @@ class ModelTrainer:
         import joblib
         joblib.dump(self.model, f'saved_models/{self.name}.joblib')
 
+    def args(self):
+        return self.model.get_params()
+

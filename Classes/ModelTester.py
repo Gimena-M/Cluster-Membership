@@ -112,6 +112,7 @@ class ModelTester:
                     plt.legend()
 
         plt.savefig(f'metrics/{self.name}.png', dpi=150, bbox_inches= 'tight')
+        plt.close()
 
     def test_thresholds(self):
         # get predictions with different thresholds
@@ -131,6 +132,7 @@ class ModelTester:
             plt.xlabel('Predicted')
             plt.ylabel('True')
         plt.savefig(f'metrics/{self.name}_thresholds.png', dpi=150, bbox_inches= 'tight')
+        plt.close()
 
     def test_best_thresholds(self):
         from sklearn.metrics import confusion_matrix
@@ -187,4 +189,5 @@ class ModelTester:
         plt.ylabel('True')
 
         plt.savefig(f'metrics/{self.name}_best-thresholds_.png', dpi=150, bbox_inches= 'tight')
+        plt.close()
 
