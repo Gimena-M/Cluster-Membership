@@ -11,5 +11,3 @@ __pycache__
 *.fits
 old
 RF/1-searches/saved_models/
-
-SVM/
