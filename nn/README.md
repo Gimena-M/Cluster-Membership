@@ -10,6 +10,8 @@ This directory contains some tests:
 + 8-filtered_z: compared performance using tables with all galaxies, and tables with only galaxies within a z range around the nearest BCG ("z_filtered")
 + 9-features: compared performance using different sets of features.
 + 10-mass_lims: compared performance using all galaxies and using only galaxies with log_st_mass > 10.5
++ 11-color_lims: compared performance using all galaxies and using galaxies in different ranges of g-r and r-i colors.
++ 12-absolute_mags: compared performance using all galaxies and using only galaxies with i_cmodel_mag_abs < -22.0
 
 Each directory contains:
 

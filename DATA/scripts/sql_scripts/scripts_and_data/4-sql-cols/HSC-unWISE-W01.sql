@@ -13,4 +13,5 @@ g_sdssshape_shape12, r_sdssshape_shape12, i_sdssshape_shape12, z_sdssshape_shape
 g_sdssshape_shape22, r_sdssshape_shape22, i_sdssshape_shape22, z_sdssshape_shape22, y_sdssshape_shape22,
 g_sdssshape_shape11sigma, r_sdssshape_shape11sigma, i_sdssshape_shape11sigma, z_sdssshape_shape11sigma, y_sdssshape_shape11sigma,
 g_sdssshape_shape12sigma, r_sdssshape_shape12sigma, i_sdssshape_shape12sigma, z_sdssshape_shape12sigma, y_sdssshape_shape12sigma,
-g_sdssshape_shape22sigma, r_sdssshape_shape22sigma, i_sdssshape_shape22sigma, z_sdssshape_shape22sigma, y_sdssshape_shape22sigma FROM pdr2_wide.forced LEFT JOIN pdr2_wide.forced2 USING (object_id) LEFT JOIN pdr2_wide.forced3 USING (object_id) NATURAL JOIN ids
+g_sdssshape_shape22sigma, r_sdssshape_shape22sigma, i_sdssshape_shape22sigma, z_sdssshape_shape22sigma, y_sdssshape_shape22sigma,
+a_g, a_r, a_i, a_z, a_y FROM pdr2_wide.forced LEFT JOIN pdr2_wide.forced2 USING (object_id) LEFT JOIN pdr2_wide.forced3 USING (object_id) NATURAL JOIN ids
