@@ -1,5 +1,6 @@
 import sys
 import tensorflow as tf
+import numpy as np
 
 # Imports from Classes directory
 sys.path.append('../../Classes')
@@ -7,15 +8,17 @@ from DataHandler import DataHandler
 from NNModelController import NNModelController
 
 # Load and prepare data data 
-data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', fields_list=['W01', 'W02', 'W03', 'W04'], balance= 'weights')
+data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', fields_list=['W02', 'W03', 'W04'], balance= 'weights')
 data.main()
 
-# Maximum values for i
-mag_lims = [None, -22.]
-names = ['max_i_mag_none', 'max_i_mag_22']
+q1 = np.quantile(data.data['i_cmodel_mag_abs'], 0.25)
+q3 = np.quantile(data.data['i_cmodel_mag_abs'], 0.75)
+
+mag_lims = [None, None, q1, q3, None]
+names = ['all', 'less_than_q1', 'between_q1_q3', 'more_than_q3']
 
 # Train and test each model
-for m,nam in zip(mag_lims, names):
+for i,nam in enumerate(names):
 
     # Architecture
     layers = [
@@ -31,9 +34,12 @@ for m,nam in zip(mag_lims, names):
         metrics=[]   
     )
 
-    if m:
-        data.feat_max = {"i_cmodel_mag_abs": m}
-
-    mod = NNModelController(data = data.copy(), name = nam, layers = layers.copy(), compile_params= compile_params)
+    d = data.copy()
+    if mag_lims[i+1]:
+        d.feat_max = {"i_cmodel_mag_abs": mag_lims[i+1]}
+    if mag_lims[i]:
+        d.feat_min = {"i_cmodel_mag_abs": mag_lims[i]}
+    
+    mod = NNModelController(data = d, name = nam, layers = layers.copy(), compile_params= compile_params)
     mod.main(prep_data= True)
 

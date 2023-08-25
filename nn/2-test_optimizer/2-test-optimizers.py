@@ -35,7 +35,7 @@ name = 's_adam_0.001'
 layers = [
     tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
+    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(1, activation='sigmoid')
     ]
@@ -73,7 +73,7 @@ name = 's_adam_0.0005'
 layers = [
     tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
+    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(1, activation='sigmoid')
     ]
@@ -113,7 +113,7 @@ name = 's_adamw_0.001'
 layers = [
     tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
+    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(1, activation='sigmoid')
     ]

@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import tensorflow as tf
 
 # Imports from Classes directory
@@ -7,15 +8,17 @@ from DataHandler import DataHandler
 from NNModelController import NNModelController
 
 # Load and prepare data data 
-data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', fields_list=['W01', 'W02', 'W03', 'W04'], balance= 'weights')
+data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', fields_list=['W02', 'W03', 'W04'], balance= 'weights')
 data.main()
 
-# Maximum values for i
-mass_lims = [None, 10.5]
-names = ['max_mass_none', 'max_mass_10.5']
+q1 = np.quantile(data.data['log_st_mass'], 0.25)
+q3 = np.quantile(data.data['log_st_mass'], 0.75)
+
+lims = [None, None, q1, q3, None]
+names = ['all', 'less_than_q1', 'between_q1_q3', 'more_than_q3']
 
 # Train and test each model
-for m,nam in zip(mass_lims, names):
+for i,nam in enumerate(names):
 
     # Architecture
     layers = [
@@ -31,9 +34,11 @@ for m,nam in zip(mass_lims, names):
         metrics=[]   
     )
 
-    if m:
-        data.feat_max = {"log_st_mass": m}
-
-    mod = NNModelController(data = data.copy(), name = nam, layers = layers.copy(), compile_params= compile_params)
+    d = data.copy()
+    if lims[i+1]:
+        d.feat_max = {"log_st_mass": lims[i+1]}
+    if lims[i]:
+        d.feat_min = {"log_st_mass": lims[i]}
+    
+    mod = NNModelController(data = d, name = nam, layers = layers.copy(), compile_params= compile_params)
     mod.main(prep_data= True)
-

@@ -7,13 +7,12 @@ from DataHandler import DataHandler
 from NNModelController import NNModelController
 
 # Load and prepare data data 
-data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', fields_list=['W01', 'W02'], balance= 'weights')
+data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', fields_list=['W02','W03','W04'], balance= 'weights')
 data.main()
 
-features = ['all_features.txt', 'features1.txt', 'all_features_bcg.txt', 'all_features_z_mass.txt']
-names = ['all_features', 'features1', 'all_features_bcg', 'all_features_z_mass']
+features = ['all_features', 'all_features_bcg', 'all_features_z_mass', 'all_features_abs_mags']
 
-for feat,nam in zip(features,names):
+for feat in features:
 
     # Architecture
     layers = [
@@ -29,6 +28,6 @@ for feat,nam in zip(features,names):
         metrics=[]   
     )
 
-    data.features_txt = feat
-    mod = NNModelController(data = data.copy(), name = nam, layers = layers.copy(), compile_params= compile_params)
+    data.features_txt = feat + '.txt'
+    mod = NNModelController(data = data.copy(), name = feat, layers = layers.copy(), compile_params= compile_params)
     mod.main(prep_data= True)

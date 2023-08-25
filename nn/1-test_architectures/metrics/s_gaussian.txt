@@ -1,8 +1,8 @@
-Model: "sequential_8"
+Model: "sequential_2"
 _________________________________________________________________
  Layer (type)                Output Shape              Param #   
 =================================================================
- normalization_8 (Normalizat  (None, 61)               123       
+ normalization_2 (Normalizat  (None, 61)               123       
  ion)                                                            
                                                                  
  dense_33 (Dense)            (None, 64)                3968      
@@ -10,16 +10,16 @@ _________________________________________________________________
  gaussian_dropout_7 (Gaussia  (None, 64)               0         
  nDropout)                                                       
                                                                  
- dense_34 (Dense)            (None, 64)                4160      
+ dense_34 (Dense)            (None, 128)               8320      
                                                                  
- gaussian_dropout_8 (Gaussia  (None, 64)               0         
+ gaussian_dropout_8 (Gaussia  (None, 128)              0         
  nDropout)                                                       
                                                                  
- dense_35 (Dense)            (None, 1)                 65        
+ dense_35 (Dense)            (None, 1)                 129       
                                                                  
 =================================================================
-Total params: 8,316
-Trainable params: 8,193
+Total params: 12,540
+Trainable params: 12,417
 Non-trainable params: 123
 _________________________________________________________________
 
@@ -43,15 +43,15 @@ weights: True
 Optimizer: Adam 
 Loss function: binary_crossentropy 
 ----------------------------------------------------------------------
-Loss on test dataset: 0.5937 
-ROC curve AUC: 0.7369154688174173
-Precision-recall AUC: 0.5437875903708405
+Loss on test dataset: 0.5833 
+ROC curve AUC: 0.7421465663422673
+Precision-recall AUC: 0.5561188505383587
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 
-           0       0.81      0.68      0.74     37131
-           1       0.49      0.67      0.57     17443
+           0       0.81      0.69      0.74     38380
+           1       0.51      0.67      0.58     18500
 
-    accuracy                           0.67     54574
-   macro avg       0.65      0.67      0.65     54574
-weighted avg       0.71      0.67      0.68     54574
+    accuracy                           0.68     56880
+   macro avg       0.66      0.68      0.66     56880
+weighted avg       0.71      0.68      0.69     56880

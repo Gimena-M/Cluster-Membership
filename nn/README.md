@@ -6,12 +6,12 @@ This directory contains some tests:
 + 4-z_lims: trained and tested a model with galaxies around BCGs with different maximum redshifts None, 1.0, 0.5, and 0.25.
 + 5-z-0.7: tested different architectures, training with galaxies around BCGs at up to z = 0.7
 + 6-z_steps: trained a model with BCGs in redshift ranges of size 0.1.
-+ 7-mag_i_lims: trained a model with galaxies with i magnitude lower than 19, 21, and with no limit.
++ 7-mag_i_lims: compared performance using galaxies in different ranges of i_cmodel_mag
 + 8-filtered_z: compared performance using tables with all galaxies, and tables with only galaxies within a z range around the nearest BCG ("z_filtered")
 + 9-features: compared performance using different sets of features.
-+ 10-mass_lims: compared performance using all galaxies and using only galaxies with log_st_mass > 10.5
-+ 11-color_lims: compared performance using all galaxies and using galaxies in different ranges of g-r and r-i colors.
-+ 12-absolute_mags: compared performance using all galaxies and using only galaxies with i_cmodel_mag_abs < -22.0
++ 10-mass_lims: compared performance using galaxies in different ranges of log_st_mass
++ 11-color_lims: compared performance using galaxies in different ranges of r - i color
++ 12-absolute_mags: compared performance using galaxies in different ranges of i_cmodel_mag_abs
 
 Each directory contains:
 

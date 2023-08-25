@@ -26,7 +26,7 @@ layers_m = [
     ]
 layers_s = [
     tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
-    tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
+    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
     tf.keras.layers.Dense(1, activation='sigmoid')
     ]
 
@@ -53,7 +53,7 @@ layers_m_dropout = [
 layers_s_dropout = [
     tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
+    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
     tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(1, activation='sigmoid')
     ]
@@ -81,7 +81,7 @@ layers_m_gaussian = [
 layers_s_gaussian = [
     tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
     tf.keras.layers.GaussianDropout(0.2),
-    tf.keras.layers.Dense(64, activation=tf.keras.activations.relu),
+    tf.keras.layers.Dense(128, activation=tf.keras.activations.relu),
     tf.keras.layers.GaussianDropout(0.2),
     tf.keras.layers.Dense(1, activation='sigmoid')
     ]

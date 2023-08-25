@@ -1,23 +1,27 @@
-Model: "sequential_2"
+Model: "sequential_3"
 _________________________________________________________________
  Layer (type)                Output Shape              Param #   
 =================================================================
- normalization_2 (Normalizat  (None, 61)               123       
+ normalization_3 (Normalizat  (None, 61)               123       
  ion)                                                            
                                                                  
- dense_11 (Dense)            (None, 64)                3968      
+ dense_7 (Dense)             (None, 64)                3968      
                                                                  
- dropout_3 (Dropout)         (None, 64)                0         
+ dropout (Dropout)           (None, 64)                0         
                                                                  
- dense_12 (Dense)            (None, 64)                4160      
+ dense_8 (Dense)             (None, 64)                4160      
                                                                  
- dropout_4 (Dropout)         (None, 64)                0         
+ dropout_1 (Dropout)         (None, 64)                0         
                                                                  
- dense_13 (Dense)            (None, 1)                 65        
+ dense_9 (Dense)             (None, 128)               8320      
+                                                                 
+ dropout_2 (Dropout)         (None, 128)               0         
+                                                                 
+ dense_10 (Dense)            (None, 1)                 129       
                                                                  
 =================================================================
-Total params: 8,316
-Trainable params: 8,193
+Total params: 16,700
+Trainable params: 16,577
 Non-trainable params: 123
 _________________________________________________________________
 
@@ -41,15 +45,15 @@ weights: True
 Optimizer: Adam 
 Loss function: binary_crossentropy 
 ----------------------------------------------------------------------
-Loss on test dataset: 0.4659 
-ROC curve AUC: 0.8536826913051264
-Precision-recall AUC: 0.6485680934818656
+Loss on test dataset: 0.4846 
+ROC curve AUC: 0.8432820171556096
+Precision-recall AUC: 0.6469225982062982
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 
-           0       0.93      0.69      0.79     27151
-           1       0.53      0.86      0.66     10766
+           0       0.92      0.69      0.78     28317
+           1       0.53      0.85      0.65     11730
 
-    accuracy                           0.74     37917
-   macro avg       0.73      0.78      0.73     37917
-weighted avg       0.81      0.74      0.76     37917
+    accuracy                           0.73     40047
+   macro avg       0.72      0.77      0.72     40047
+weighted avg       0.80      0.73      0.75     40047

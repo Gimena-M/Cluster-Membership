@@ -149,16 +149,21 @@ class DataHandler:
                 conds.append((self.data[key] <= float(self.feat_max[key])))
             for key in self.feat_min.keys():
                 conds.append((self.data[key] >= float(self.feat_min[key])))
-
-            for c in conds:
-                self.data = self.data[c]
+            conds = np.array(conds)
+            
+            # for c in conds:
+            #     self.data = self.data[c]
+            c = []
+            for i in range(conds.shape[1]):   
+                c.append((all(conds[:,i])))
+            self.data = self.data[c]
 
             # print number of members
             n_mem = self.data[self.data.member == 1].shape[0]
             n_no = self.data[self.data.member == 0].shape[0]
             n = self.data.shape[0]
             print ('Members after feature limits: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
-            print ('Non members feature limits: {} ({:.2f}%)'.format(n_no, n_no/n*100))
+            print ('Non members after feature limits: {} ({:.2f}%)'.format(n_no, n_no/n*100))
             print('-'*70)
 
     def split_2(self):
