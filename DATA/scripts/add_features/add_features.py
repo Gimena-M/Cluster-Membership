@@ -4,15 +4,20 @@ Add the following features to a table:
     * colors W1-g, W1-i
     * photometric redshift of the nearest BCG
 
-From command line: python add_features.py  HSC-unWISE-W01.csv
-Argument: csv table with galaxies.
+From command line: python add_features.py  HSC-unWISE-W01.csv HSC-unWISE-W01.dat
+Arguments: 
+    csv table with galaxies.
+    dat table with all objects (published by Wen & Han)
 """
 
 import pandas as pd
 import numpy as np
 import sys
+from sklearn.neighbors import NearestNeighbors
+from astropy.cosmology import FlatLambdaCDM
 
 df_file = sys.argv[1]
+dat_file = sys.argv[2]
 df = pd.read_csv(df_file)
 
 
@@ -55,6 +60,21 @@ for i,row in df.iterrows():
 
 
 
+
+print('Adding sigma_5...')
+dat = pd.read_table(dat_file, delim_whitespace=True, usecols=[0,1], names=['ra','dec'])
+
+nbrs = NearestNeighbors(n_neighbors= 6, algorithm='ball_tree', n_jobs = -1, metric= 'haversine') # the first neighbor is the point itself
+nbrs.fit(np.deg2rad(dat[['dec', 'ra']].values)) # fit it to the whole sample
+n_all = nbrs.kneighbors(np.deg2rad(df[['dec', 'ra']].values), return_distance= True)  # find neighbors only for my sample
+ang_dist_5 = np.rad2deg(n_all[0][:,5])  # angular distances to 5th neighbor
+
+# convert to Mpc
+lcmd = FlatLambdaCDM(H0=70, Om0=0.3)
+mpc_deg = lcmd.kpc_proper_per_arcmin(df['phot_z'].values).value / 1000 * 60  # Mpc/degree
+dist_5 = ang_dist_5 * mpc_deg
+
+df['sigma_5'] = 5/ np.pi /dist_5**2
 
 
 

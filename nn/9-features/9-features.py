@@ -10,8 +10,7 @@ from NNModelController import NNModelController
 data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', fields_list=['W02','W03','W04'], balance= 'weights')
 data.main()
 
-features = ['all_features', 'all_features_bcg', 'all_features_z_mass', 'all_features_abs_mags']
-
+features = ['all_features', 'all_features_bcg', 'all_features_z_mass', 'all_features_abs_mags', 'all_features_sigma_5']
 for feat in features:
 
     # Architecture
