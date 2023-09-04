@@ -46,7 +46,7 @@ class NNModelTester(ModelTester):
         self.fpr, self.tpr, self.thres_roc = roc_curve(self.data.testing_labels(), self.scores, pos_label=1)
         self.prec, self.rec, self.thres_pr = precision_recall_curve(self.data.testing_labels(), self.scores, pos_label= 1)
 
-    def write_report(self, extra_args: dict = {}):
+    def write_report(self, extra_args: dict = {}, to_file = True):
 
         # write metrics into file: loss, auc, classification report
         # write also a model summary, arguments of the DataHandler, and extra args.
@@ -54,34 +54,64 @@ class NNModelTester(ModelTester):
         from sklearn.metrics import auc, classification_report
         test_loss = self.model.evaluate(self.data.testing_features(), self.data.testing_labels(), verbose=0)
 
-        def model_write(string):
-            file.write(string + '\n')
 
-        with open(f'metrics/{self.name}.txt', mode='w') as file:
-            self.model.summary(print_fn= model_write)
-            file.write('\n\n')
-            
+        if to_file:
+            def model_write(string):
+                file.write(string + '\n')
+
+            with open(f'metrics/{self.name}.txt', mode='w') as file:
+                self.model.summary(print_fn= model_write)
+                file.write('\n\n')
+                
+                for key in self.data.args():
+                    file.write(f'{key}: {self.data.args()[key]} \n')
+                file.write('-'*70 + '\n')
+                
+                for key in extra_args:
+                    file.write(f'{key}: {extra_args[key]} \n')
+                file.write('-'*70 + '\n')
+                
+                try:
+                    file.write('Optimizer: {} \n'.format(self.model.optimizer._name))
+                except:
+                    file.write('Optimizer: {} \n'.format(self.model.optimizer.name))
+
+                try:
+                    file.write('Loss function: {} \n'.format(self.model.loss.name))
+                except:
+                    file.write('Loss function: {} \n'.format(self.model.loss._name))
+                    
+                file.write('-'*70 + '\n')
+                file.write('Loss on test dataset: {:.4g} \n'.format(test_loss))
+                file.write('ROC curve AUC: {}\n'.format(auc(self.fpr, self.tpr)))
+                file.write('Precision-recall AUC: {}\n'.format(auc(self.rec, self.prec)))
+                file.write('-'*70 + '\n')
+                file.write(classification_report(self.data.testing_labels(),self.predictions))
+        else:
+            print(self.model.summary())
+            print('\n\n')
+                
             for key in self.data.args():
-                file.write(f'{key}: {self.data.args()[key]} \n')
-            file.write('-'*70 + '\n')
+                print(f'{key}: {self.data.args()[key]} \n')
+            print('-'*70 + '\n')
             
             for key in extra_args:
-                file.write(f'{key}: {extra_args[key]} \n')
-            file.write('-'*70 + '\n')
+               print(f'{key}: {extra_args[key]} \n')
+            print('-'*70 + '\n')
             
             try:
-                file.write('Optimizer: {} \n'.format(self.model.optimizer._name))
+               print('Optimizer: {} \n'.format(self.model.optimizer._name))
             except:
-                file.write('Optimizer: {} \n'.format(self.model.optimizer.name))
+                print('Optimizer: {} \n'.format(self.model.optimizer.name))
 
             try:
-                file.write('Loss function: {} \n'.format(self.model.loss.name))
+                print('Loss function: {} \n'.format(self.model.loss.name))
             except:
-                file.write('Loss function: {} \n'.format(self.model.loss._name))
+                print('Loss function: {} \n'.format(self.model.loss._name))
                 
-            file.write('-'*70 + '\n')
-            file.write('Loss on test dataset: {:.4g} \n'.format(test_loss))
-            file.write('ROC curve AUC: {}\n'.format(auc(self.fpr, self.tpr)))
-            file.write('Precision-recall AUC: {}\n'.format(auc(self.rec, self.prec)))
-            file.write('-'*70 + '\n')
-            file.write(classification_report(self.data.testing_labels(),self.predictions))
+            print('-'*70 + '\n')
+            print('Loss on test dataset: {:.4g} \n'.format(test_loss))
+            print('ROC curve AUC: {}\n'.format(auc(self.fpr, self.tpr)))
+            print('Precision-recall AUC: {}\n'.format(auc(self.rec, self.prec)))
+            print('-'*70 + '\n')
+            print(classification_report(self.data.testing_labels(),self.predictions))

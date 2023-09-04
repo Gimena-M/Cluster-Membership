@@ -65,11 +65,11 @@ class ModelTester:
         self.fpr, self.tpr, self.thres_roc = roc_curve(self.data.testing_labels(), self.scores[:,1], pos_label=1)
         self.prec, self.rec, self.thres_pr = precision_recall_curve(self.data.testing_labels(), self.scores[:,1], pos_label= 1)
 
-    def write_report(self, extra_args: dict = {}):
+    def write_report(self, extra_args: dict = {}, to_file = True):
         # save a txt file with metrics and arguments used.
         pass 
 
-    def plot_report(self, loss_lims = (None,None)):
+    def plot_report(self, loss_lims = (None,None), to_file = True):
         # save the plots given by the "plot" attribute to a file.
 
         plt.figure(figsize=self.figsize)
@@ -110,9 +110,11 @@ class ModelTester:
                     plt.ylim(loss_lims)
                     plt.grid()
                     plt.legend()
-
-        plt.savefig(f'metrics/{self.name}.png', dpi=150, bbox_inches= 'tight')
-        plt.close()
+        if to_file:
+            plt.savefig(f'metrics/{self.name}.png', dpi=150, bbox_inches= 'tight')
+            plt.close()
+        else:
+            plt.show()
 
     def test_thresholds(self):
         # get predictions with different thresholds
