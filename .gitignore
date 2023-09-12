@@ -1,5 +1,4 @@
 OTROS/
-DATA/scripts/clean_data_script/clean.ipynb
 DATA/scripts/sql_scripts/scripts_and_data/notes.txt
 DATA/scripts/sql_scripts/cred.txt
 batch*.bat

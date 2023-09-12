@@ -20,6 +20,7 @@ The scripts directory contains:
 + clean_data_script: script to remove outliers, NaN and inf from tables.
 + add_features: script to add a set of features to a table, and script to add absolute magnitudes to tables.
 + cut_z: script (and notebook) to remove galaxies whose redshift differs significantly from the redshift of the nearest BCG (output are the z_filtered tables)
++ The NOTEBOOKS directory contains jupyter notebooks with smaller tests.
 
 The augmentation directory contains notebooks testing SMOTE and normalizing flows.
 
