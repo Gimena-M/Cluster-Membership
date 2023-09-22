@@ -3,6 +3,7 @@ Add the following features to a table:
     * colors g-r, r-i, i-z, z-y
     * colors W1-g, W1-i
     * photometric redshift of the nearest BCG
+    * sigma_5
 
 From command line: python add_features.py  HSC-unWISE-W01.csv HSC-unWISE-W01.dat
 Arguments: 
@@ -70,8 +71,8 @@ n_all = nbrs.kneighbors(np.deg2rad(df[['dec', 'ra']].values), return_distance= T
 ang_dist_5 = np.rad2deg(n_all[0][:,5])  # angular distances to 5th neighbor
 
 # convert to Mpc
-lcmd = FlatLambdaCDM(H0=70, Om0=0.3)
-mpc_deg = lcmd.kpc_proper_per_arcmin(df['phot_z'].values).value / 1000 * 60  # Mpc/degree
+lcdm = FlatLambdaCDM(H0=70, Om0=0.3)
+mpc_deg = lcdm.kpc_proper_per_arcmin(df['phot_z'].values).value / 1000 * 60  # Mpc/degree
 dist_5 = ang_dist_5 * mpc_deg
 
 df['sigma_5'] = 5/ np.pi /dist_5**2

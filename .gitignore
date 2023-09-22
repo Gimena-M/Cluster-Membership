@@ -11,3 +11,4 @@ __pycache__
 old
 RF/1-searches/saved_models/
 DATA--DC2/
+random-search-sigmas.joblib

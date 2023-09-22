@@ -1,0 +1,61 @@
+bootstrap: True 
+ccp_alpha: 0.0 
+class_weight: balanced 
+criterion: log_loss 
+max_depth: 30 
+max_features: sqrt 
+max_leaf_nodes: None 
+max_samples: None 
+min_impurity_decrease: 0.0 
+min_samples_leaf: 1 
+min_samples_split: 5 
+min_weight_fraction_leaf: 0.0 
+n_estimators: 100 
+n_jobs: -1 
+oob_score: False 
+random_state: None 
+verbose: 0 
+warm_start: False 
+----------------------------------------------------------------------
+features_txt: all_features_sigmas.txt 
+fields_list: ['W03'] 
+z_filtered: False 
+min_n500: None 
+max_n500: None 
+min_z: None 
+max_z: None 
+feat_max: {} 
+feat_min: {} 
+random_state: 42 
+balance: None 
+bootstrap: True 
+ccp_alpha: 0.0 
+class_weight: balanced 
+criterion: log_loss 
+max_depth: 30 
+max_features: sqrt 
+max_leaf_nodes: None 
+max_samples: None 
+min_impurity_decrease: 0.0 
+min_samples_leaf: 1 
+min_samples_split: 5 
+min_weight_fraction_leaf: 0.0 
+n_estimators: 100 
+n_jobs: -1 
+oob_score: False 
+random_state: None 
+verbose: 0 
+warm_start: False 
+----------------------------------------------------------------------
+Model score: 0.8747 
+ROC curve AUC: 0.940076348422584
+Precision-recall AUC: 0.8844267669297424
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.90      0.91      0.91     44991
+           1       0.82      0.79      0.80     21553
+
+    accuracy                           0.87     66544
+   macro avg       0.86      0.85      0.86     66544
+weighted avg       0.87      0.87      0.87     66544
