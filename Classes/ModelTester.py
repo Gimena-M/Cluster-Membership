@@ -51,7 +51,7 @@ class ModelTester:
 
         # test different thresholds
         if thresholds:
-            self.test_thresholds()
+            self.test_thresholds(thresholds)
 
         if best_thresholds:
             self.test_best_thresholds()
@@ -78,54 +78,66 @@ class ModelTester:
             plt.subplot(self.rows, self.cols, i+1)
             match plot:
                 case "confusion matrix":
-                    from sklearn.metrics import confusion_matrix
-                    conf_m = confusion_matrix(self.data.testing_labels(), self.predictions)
-                    df_conf_m = pd.DataFrame(conf_m, index=[0,1], columns=[0,1])
-                    sns.heatmap(df_conf_m, cmap=sns.color_palette('light:teal', as_cmap=True), annot=True, fmt='d')
-                    plt.xlabel('Predicted')
-                    plt.ylabel('True')
+                    self.conf_matrix()
                 case "roc":
-                    plt.plot(self.fpr, self.tpr)
-                    plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
-                    plt.xlim([0.0, 1.0])
-                    plt.ylim([0.0, 1.05])
-                    plt.xlabel('FPR')
-                    plt.ylabel('TPR')
-                    plt.grid()
+                    self.roc()
                 case "precision-recall":
-                    a = len (self.data.testing[self.data.testing_labels()==1])/len(self.data.testing)
-                    plt.plot(self.rec, self.prec)
-                    plt.plot([0, 1], [a, a] , color='gray', linestyle='--')
-                    plt.xlabel('Recall')
-                    plt.ylabel('Precision')
-                    plt.grid()
-                    plt.xlim([0,1])
-                    plt.ylim([0,1])
+                    self.precision_recall()
                 case "loss":
-                    # loss during training for neural networks
-                    plt.plot(self.history['loss'], label='Train')
-                    plt.plot(self.history['val_loss'], label='Validation')
-                    plt.ylabel('Loss')
-                    plt.xlabel('Epoch')
-                    plt.ylim(loss_lims)
-                    plt.grid()
-                    plt.legend()
+                    self.loss_epochs(loss_lims)
         if to_file:
             plt.savefig(f'metrics/{self.name}.png', dpi=150, bbox_inches= 'tight')
             plt.close()
         else:
             plt.show()
 
-    def test_thresholds(self):
+    def conf_matrix(self):
+        from sklearn.metrics import confusion_matrix
+        conf_m = confusion_matrix(self.data.testing_labels(), self.predictions)
+        df_conf_m = pd.DataFrame(conf_m, index=[0,1], columns=[0,1])
+        sns.heatmap(df_conf_m, cmap=sns.color_palette('light:teal', as_cmap=True), annot=True, fmt='d')
+        plt.xlabel('Predicted')
+        plt.ylabel('True')
+
+    def roc(self):
+        plt.plot(self.fpr, self.tpr)
+        plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('FPR')
+        plt.ylabel('TPR')
+        plt.grid()
+
+    def precision_recall(self):
+        a = len (self.data.testing[self.data.testing_labels()==1])/len(self.data.testing)
+        plt.plot(self.rec, self.prec)
+        plt.plot([0, 1], [a, a] , color='gray', linestyle='--')
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.grid()
+        plt.xlim([0,1])
+        plt.ylim([0,1])
+
+    def loss_epochs(self, loss_lims = (None,None)):
+        # loss during training for neural networks
+        plt.plot(self.history['loss'], label='Train')
+        plt.plot(self.history['val_loss'], label='Validation')
+        plt.ylabel('Loss')
+        plt.xlabel('Epoch')
+        plt.ylim(loss_lims)
+        plt.grid()
+        plt.legend()
+
+    def test_thresholds(self, thresholds: list|None, to_file: bool = True):
         # get predictions with different thresholds
         pred_c_thres = []
-        for t in self.thresholds:
+        for t in thresholds:
             pred_c_thres.append([math.floor(p[0]) if p[0] < t else math.ceil(p[0]) for p in self.scores])
 
         # plot conf matrix for each
         from sklearn.metrics import confusion_matrix
         plt.figure(figsize=(15,4))
-        for i,(p,t) in enumerate(zip(pred_c_thres,self.thresholds)):
+        for i,(p,t) in enumerate(zip(pred_c_thres,thresholds)):
             plt.subplot(1, 3, i+1)
             plt.title(f'threshold = {t}')
             c = confusion_matrix(self.data.testing_labels(), p)
@@ -133,8 +145,11 @@ class ModelTester:
             sns.heatmap(c, cmap=sns.color_palette('light:indigo', as_cmap=True), annot=True, fmt='d')
             plt.xlabel('Predicted')
             plt.ylabel('True')
-        plt.savefig(f'metrics/{self.name}_thresholds.png', dpi=150, bbox_inches= 'tight')
-        plt.close()
+        if to_file:
+            plt.savefig(f'metrics/{self.name}_thresholds.png', dpi=150, bbox_inches= 'tight')
+            plt.close()
+        else:
+            plt.show()
 
     def test_best_thresholds(self):
         from sklearn.metrics import confusion_matrix

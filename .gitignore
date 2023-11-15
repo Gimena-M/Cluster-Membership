@@ -1,6 +1,5 @@
 OTROS/
-DATA/scripts/sql_scripts/scripts_and_data/notes.txt
-DATA/scripts/sql_scripts/cred.txt
+cred.txt
 batch*.bat
 .ipynb_checkpoints
 .vscode
@@ -10,5 +9,4 @@ __pycache__
 *.fits
 old
 RF/1-searches/saved_models/
-DATA--DC2/
 random-search-sigmas.joblib

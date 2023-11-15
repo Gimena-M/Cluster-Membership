@@ -22,13 +22,14 @@ import pandas as pd
 import copy
 
 class DataHandler:
-    def __init__(self, validation_sample: bool, features_txt: str,
+    def __init__(self, validation_sample: bool, features_txt: str, labels: str = 'member',
                  fields_list: list = ['W01','W02','W03','W04'], z_filtered: bool = False,
                  min_n500: int|None = None, max_n500: int|None = None, min_z: int|float = None, max_z: int|float = None,
                  feat_max: dict = {}, feat_min: dict = {},
                  random_state: int = 42, balance: str|None = None):
         self.validation_sample = validation_sample
         self.features_txt = features_txt
+        self.labels = labels
         self.fields_list = fields_list
         self.z_filtered = z_filtered
         self.min_n500 = min_n500
@@ -60,9 +61,9 @@ class DataHandler:
         )
         return dd
 
-    def main(self):
+    def main(self, only_members: bool = False):
         # read, prepare and split data.
-        self.read_data()
+        self.read_data(only_members = only_members)
         self.z_n500_limits()
         self.features_labels()
         self.feature_limits()
@@ -88,7 +89,7 @@ class DataHandler:
         self.balancing()
         
 
-    def read_data(self):
+    def read_data(self, only_members: bool = False):
         # read and join HSC tables 
         li = []
         for fi in self.fields_list:
@@ -99,12 +100,14 @@ class DataHandler:
             li.append(d)
         self.data = pd.concat(li, axis = 'rows')
 
+        if only_members:
+            self.data = self.data[self.data.member == 1]
+
     def features_labels(self):
 
         # read features list
-        with open(self.data_dir + self.features_txt) as file:
+        with open(f'{self.data_dir}features_lists/{self.features_txt}') as file:
             self.features = file.read().splitlines()
-        self.labels = 'member'
 
         # print number of members
         n_mem = self.data[self.data.member == 1].shape[0]
@@ -180,8 +183,13 @@ class DataHandler:
 
         # split into training, testing and validation samples. 
         from sklearn.model_selection import train_test_split
-        self.training, self.testing = train_test_split(self.data, test_size = 0.3, stratify = self.data_labels(), random_state = self.random_state)
-        self.validation, self.testing = train_test_split(self.testing, test_size = 0.3, stratify = self.testing_labels(), random_state = self.random_state)
+        if np.issubdtype(self.data_labels().dtype, float):
+            # if labels are floats, do not stratify
+            self.training, self.testing = train_test_split(self.data, test_size = 0.3, random_state = self.random_state)
+            self.validation, self.testing = train_test_split(self.testing, test_size = 0.3, random_state = self.random_state)
+        else:
+            self.training, self.testing = train_test_split(self.data, test_size = 0.3, stratify = self.data_labels(), random_state = self.random_state)
+            self.validation, self.testing = train_test_split(self.testing, test_size = 0.3, stratify = self.testing_labels(), random_state = self.random_state)
 
         print ('Training: {} members, {} non members'.format(self.training[self.training_labels() == 1].shape[0], self.training[self.training_labels() == 0].shape[0]))
         print ('Validation: {} members, {} non members'.format(self.validation[self.validation_labels() == 1].shape[0], self.validation[self.validation_labels() == 0].shape[0]))
