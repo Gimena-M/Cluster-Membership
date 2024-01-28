@@ -23,7 +23,7 @@ import copy
 
 class DataHandler:
     def __init__(self, validation_sample: bool, features_txt: str, labels: str = 'member',
-                 fields_list: list = ['W01','W02','W03','W04'], z_filtered: bool = False,
+                 fields_list: list = ['W02','W03','W04','W05','W06','W07'], z_filtered: bool = False,
                  min_n500: int|None = None, max_n500: int|None = None, min_z: int|float = None, max_z: int|float = None,
                  feat_max: dict = {}, feat_min: dict = {},
                  random_state: int = 42, balance: str|None = None):
@@ -94,9 +94,9 @@ class DataHandler:
         li = []
         for fi in self.fields_list:
             if self.z_filtered:
-                d = pd.read_csv(f'{self.data_dir}z-filtered_clean-HSC-unWISE-{fi}.csv')
+                d = pd.read_csv(f'{self.data_dir}z-filtered_HSC-unWISE-{fi}.csv')
             else:
-                d = pd.read_csv(f'{self.data_dir}clean-HSC-unWISE-{fi}.csv')
+                d = pd.read_csv(f'{self.data_dir}HSC-unWISE-{fi}.csv')
             li.append(d)
         self.data = pd.concat(li, axis = 'rows')
 
@@ -172,8 +172,12 @@ class DataHandler:
     def split_2(self):
 
         # split into training and testing samples. 
-        from sklearn.model_selection import train_test_split
-        self.training, self.testing = train_test_split(self.data, test_size = 0.3, stratify = self.data[self.labels], random_state = self.random_state)
+
+        self.training = self.data[self.data['split'] == 0]
+        self.testing = self.data[(self.data['split'] == 1) | (self.data['split'] == 2)]
+
+        # from sklearn.model_selection import train_test_split
+        # self.training, self.testing = train_test_split(self.data, test_size = 0.3, stratify = self.data[self.labels], random_state = self.random_state)
 
         print ('Training: {} members, {} non members'.format(self.training[self.training.member == 1].shape[0], self.training[self.training.member == 0].shape[0]))
         print ('Testing: {} members, {} non members'.format(self.testing[self.testing.member == 1].shape[0], self.testing[self.testing.member == 0].shape[0]))
@@ -182,14 +186,19 @@ class DataHandler:
     def split_3(self):
 
         # split into training, testing and validation samples. 
-        from sklearn.model_selection import train_test_split
+        
         if np.issubdtype(self.data_labels().dtype, float):
             # if labels are floats, do not stratify
+            from sklearn.model_selection import train_test_split
             self.training, self.testing = train_test_split(self.data, test_size = 0.3, random_state = self.random_state)
             self.validation, self.testing = train_test_split(self.testing, test_size = 0.3, random_state = self.random_state)
         else:
-            self.training, self.testing = train_test_split(self.data, test_size = 0.3, stratify = self.data_labels(), random_state = self.random_state)
-            self.validation, self.testing = train_test_split(self.testing, test_size = 0.3, stratify = self.testing_labels(), random_state = self.random_state)
+            self.training = self.data[self.data['split'] == 0]
+            self.testing = self.data[self.data['split'] == 1]
+            self.validation = self.data[self.data['split'] == 2]
+
+            # self.training, self.testing = train_test_split(self.data, test_size = 0.3, stratify = self.data_labels(), random_state = self.random_state)
+            # self.validation, self.testing = train_test_split(self.testing, test_size = 0.3, stratify = self.testing_labels(), random_state = self.random_state)
 
         print ('Training: {} members, {} non members'.format(self.training[self.training_labels() == 1].shape[0], self.training[self.training_labels() == 0].shape[0]))
         print ('Validation: {} members, {} non members'.format(self.validation[self.validation_labels() == 1].shape[0], self.validation[self.validation_labels() == 0].shape[0]))

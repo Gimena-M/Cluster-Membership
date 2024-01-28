@@ -26,17 +26,14 @@ i_kronflux_magsigma
 z_kronflux_magsigma
 y_kronflux_magsigma
 i_kronflux_radius
-g_sdssshape_shape11
 r_sdssshape_shape11
 i_sdssshape_shape11
 z_sdssshape_shape11
 y_sdssshape_shape11
-g_sdssshape_shape12
 r_sdssshape_shape12
 i_sdssshape_shape12
 z_sdssshape_shape12
 y_sdssshape_shape12
-g_sdssshape_shape22
 r_sdssshape_shape22
 i_sdssshape_shape22
 z_sdssshape_shape22
