@@ -32,7 +32,7 @@ from NNModelTrainer import NNModelTrainer
 class NNModelController:
 
     def __init__(self, data: DataHandler, name: str, 
-                 layers: list = [], compile_params: dict = {}, epochs: int = 60, normalization: bool = True, weights: bool = True, verbose: int = 2):
+                 layers: list = [], compile_params: dict = {}, epochs: int = 60, normalization: bool = True, weights: bool = True, verbose: int = 2, patience: int = 20, batch_size: int = 4096):
         self.data = data
         self.layers = layers
         self.name = name
@@ -41,6 +41,8 @@ class NNModelController:
         self.normalization = normalization
         self.weights = weights
         self.verbose = verbose
+        self.patience = patience
+        self.batch_size = batch_size
 
 
     def main(self, model_exists: bool = False, read_data: bool = False, prep_data: bool = False,
@@ -53,7 +55,7 @@ class NNModelController:
 
         self.trainer = NNModelTrainer(data = self.data, name = self.name, 
                                       layers = self.layers, compile_params= self.compile_params,
-                                      epochs = self.epochs, normalization= self.normalization, weights= self.weights, verbose= self.verbose)
+                                      epochs = self.epochs, normalization= self.normalization, weights= self.weights, verbose= self.verbose, patience= self.patience, batch_size= self.batch_size)
         
         if model_exists:
             self.trainer.load_model()

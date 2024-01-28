@@ -42,18 +42,21 @@ class NNModelTester(ModelTester):
         self.predictions = np.round(self.scores, decimals = 0)      #labels
 
     def curves(self):
-        from sklearn.metrics import roc_curve, precision_recall_curve
+        from sklearn.metrics import roc_curve, precision_recall_curve, auc, f1_score
         self.fpr, self.tpr, self.thres_roc = roc_curve(self.data.testing_labels(), self.scores, pos_label=1)
         self.prec, self.rec, self.thres_pr = precision_recall_curve(self.data.testing_labels(), self.scores, pos_label= 1)
+
+        self.test_loss = self.model.evaluate(self.data.testing_features(), self.data.testing_labels(), verbose=0)
+        self.roc_auc = auc(self.fpr, self.tpr)
+        self.pr_auc = auc(self.rec, self.prec)
+        self.f1 = f1_score(self.data.testing_labels(), self.predictions)
 
     def write_report(self, extra_args: dict = {}, to_file = True):
 
         # write metrics into file: loss, auc, classification report
         # write also a model summary, arguments of the DataHandler, and extra args.
         
-        from sklearn.metrics import auc, classification_report
-        test_loss = self.model.evaluate(self.data.testing_features(), self.data.testing_labels(), verbose=0)
-
+        from sklearn.metrics import classification_report
 
         if to_file:
             def model_write(string):
@@ -82,9 +85,9 @@ class NNModelTester(ModelTester):
                     file.write('Loss function: {} \n'.format(self.model.loss._name))
                     
                 file.write('-'*70 + '\n')
-                file.write('Loss on test dataset: {:.4g} \n'.format(test_loss))
-                file.write('ROC curve AUC: {}\n'.format(auc(self.fpr, self.tpr)))
-                file.write('Precision-recall AUC: {}\n'.format(auc(self.rec, self.prec)))
+                file.write('Loss on test dataset: {:.4g} \n'.format(self.test_loss))
+                file.write('ROC curve AUC: {}\n'.format(self.roc_auc))
+                file.write('Precision-recall AUC: {}\n'.format(self.pr_auc))
                 file.write('-'*70 + '\n')
                 file.write(classification_report(self.data.testing_labels(),self.predictions))
         else:
@@ -110,8 +113,8 @@ class NNModelTester(ModelTester):
                 print('Loss function: {} \n'.format(self.model.loss._name))
                 
             print('-'*70 + '\n')
-            print('Loss on test dataset: {:.4g} \n'.format(test_loss))
-            print('ROC curve AUC: {}\n'.format(auc(self.fpr, self.tpr)))
-            print('Precision-recall AUC: {}\n'.format(auc(self.rec, self.prec)))
+            print('Loss on test dataset: {:.4g} \n'.format(self.test_loss))
+            print('ROC curve AUC: {}\n'.format(self.roc_auc))
+            print('Precision-recall AUC: {}\n'.format(self.pr_auc))
             print('-'*70 + '\n')
             print(classification_report(self.data.testing_labels(),self.predictions))

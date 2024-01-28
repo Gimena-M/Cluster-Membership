@@ -10,6 +10,7 @@ Arguments for instantiation are:
     * normalization (bool): Include a normalization layer? (default: True)
     * weights (bool): Include class weights from DataHandler? (default: True)
     * verbose (int): Verbosity lever for model.fit. (default: 2)
+    * patience (int): Patience for early-stopping callback. If 0, then the callback is not used.
 
 The params_search method does not work here... :3
 The train_model method does not take any arguments. The model and trainig history are saved to a 'saved_models' directory.
@@ -28,8 +29,8 @@ import tensorflow as tf
 class NNModelTrainer(ModelTrainer):
 
     def __init__(self, data: DataHandler, name: str, 
-                 layers: list = [], compile_params: dict = {}, epochs: int = 60, 
-                 normalization: bool = True, weights: bool = True, verbose: int = 2):
+                 layers: list = [], compile_params: dict = {}, epochs: int = 100, patience: int = 15,
+                 normalization: bool = True, weights: bool = True, verbose: int = 2, batch_size: int = 4096):
         self.name = name
         self.layers = layers
         self.compile_params = compile_params
@@ -38,6 +39,8 @@ class NNModelTrainer(ModelTrainer):
         self.data = data
         self.weights = weights
         self.verbose = verbose
+        self.patience = patience
+        self.batch_size = batch_size
 
     def args(self):
         # return dictionary with some attributes.
@@ -54,11 +57,13 @@ class NNModelTrainer(ModelTrainer):
     def train_model(self):
 
         callbacks = [
-            # tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True),
             tf.keras.callbacks.CSVLogger(filename = f'saved_models/{self.name}_log.csv'),
             tf.keras.callbacks.ModelCheckpoint(filepath = f'saved_models/{self.name}.h5', monitor = 'val_loss',  save_best_only = True),
             # tf.keras.callbacks.TensorBoard()
             ]
+        
+        if self.patience:
+            callbacks.append(tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.patience, restore_best_weights=True))
 
         self.normalize()
 
@@ -72,7 +77,7 @@ class NNModelTrainer(ModelTrainer):
             callbacks = callbacks,
             validation_data = (self.data.validation_features().values, self.data.validation_labels().values),
             epochs = self.epochs,
-            batch_size = 4096
+            batch_size = self.batch_size
             )
 
         # class imbalance?

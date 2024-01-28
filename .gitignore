@@ -10,3 +10,5 @@ __pycache__
 old
 RF/1-searches/saved_models/
 random-search-sigmas.joblib
+auto_model
+*run*/
