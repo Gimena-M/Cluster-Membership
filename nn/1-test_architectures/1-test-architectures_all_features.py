@@ -48,7 +48,7 @@ mod.main(read_data= False, prep_data= False)
 
 # # 1st run
 # archs = dict(
-#     n_layers = [4], 
+#     n_layers = [2, 3, 4], 
 #     n_units = [32,64,128,256,512],
 #     dropout = [0, 0.25],
 # )

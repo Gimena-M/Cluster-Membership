@@ -117,7 +117,7 @@ data.main()
 # networks with at least one 512 neuron layer perform better
 # networks with dropout perform better
 # archs = dict(
-#     n_layers = [4], 
+#     n_layers = [2, 3, 4], 
 #     n_units = [32, 64, 128,256,512],
 #     dropout = [0.2, 0.5],
 # )
