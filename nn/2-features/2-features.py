@@ -4,6 +4,7 @@ Test other feature sets with a 512x512 network with dropout (0.2).
 
 import sys
 import tensorflow as tf
+import csv
 
 # Imports from Classes directory
 sys.path.append('../../Classes')
@@ -14,6 +15,7 @@ from NNModelController import NNModelController
 data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', balance= 'weights')
 data.main()
 
+metrics = []
 features = ['all_features', 'all_features_z_mass', 'all_features_abs_mags', 'all_features_sigma_5', 'all_features_bcg', 'all_features_sigmas']
 for feat in features: 
 
@@ -38,4 +40,15 @@ for feat in features:
 
     data.features_txt = feat + '.txt'
     mod = NNModelController(data = data.copy(), name = feat, layers = layers.copy(), compile_params= compile_params, epochs = 1000)
-    mod.main(prep_data= True)
+    mod.main(prep_data= True, model_exists= True)
+
+    # save metrics in nested list
+    metrics.append([mod.tester.p, mod.tester.r, mod.tester.specificity, mod.tester.accuracy, mod.tester.f1, mod.tester.pr_auc, mod.tester.roc_auc, mod.tester.threshold])
+
+# write metrics to csv
+    
+with open('metrics.csv', 'w', newline= '') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Model', 'Precision', 'Recall', 'Specificity', 'Accuracy', 'F1-score', 'PR AUC', 'ROC AUC', 'Threshold'])
+    for nam,met in zip(features, metrics):
+        writer.writerow([nam]+['{:.4f}'.format(m) for m in met])

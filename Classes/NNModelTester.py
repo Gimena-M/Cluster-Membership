@@ -8,14 +8,12 @@ Arguments for initialization are:
     * history (dict): Training history.
 
 The main() method performs the tests used by most scripts. Its arguments are:
-    * thresholds (list or None): List of thresholds to be tested. (default: None)
-    * best_thresholds (bool): Compute thresholds that maximize F-Score or G-Means? (default: False)
+    * optimize_threshold (bool): Use decision threshold that maximizes F1-score? (default: True)
     * extra_args (dict): Extra arguments to be saved in a txt file along with metrics. (default: {})
     * loss_lims (tuple): y limits for a loss vs epochs plot (for neural networks). (default: (None, None))
 
 File Saving:
-    * Most plots are saved to a .png file.
-    * Thresholds plots and importances plots are saved to different .png files.
+    * Plots are saved to a .png file.
     * Other metrics (Loss, AUC, etc.), arguments used, and model summaries are saved to a .txt file.
     * Files are saved in a 'metrics' directory.
 """
@@ -37,19 +35,12 @@ class NNModelTester(ModelTester):
         super().__init__(model, data, name)
         self.history = history
 
-    def predict(self):
+    def predict_score(self):
         self.scores = self.model.predict(self.data.testing_features(), verbose = 0)  #probabilities
-        self.predictions = np.round(self.scores, decimals = 0)      #labels
 
-    def curves(self):
-        from sklearn.metrics import roc_curve, precision_recall_curve, auc, f1_score
-        self.fpr, self.tpr, self.thres_roc = roc_curve(self.data.testing_labels(), self.scores, pos_label=1)
-        self.prec, self.rec, self.thres_pr = precision_recall_curve(self.data.testing_labels(), self.scores, pos_label= 1)
-
+    def compute_metrics(self):
+        super().compute_metrics()
         self.test_loss = self.model.evaluate(self.data.testing_features(), self.data.testing_labels(), verbose=0)
-        self.roc_auc = auc(self.fpr, self.tpr)
-        self.pr_auc = auc(self.rec, self.prec)
-        self.f1 = f1_score(self.data.testing_labels(), self.predictions)
 
     def write_report(self, extra_args: dict = {}, to_file = True):
 
@@ -88,6 +79,12 @@ class NNModelTester(ModelTester):
                 file.write('Loss on test dataset: {:.4g} \n'.format(self.test_loss))
                 file.write('ROC curve AUC: {}\n'.format(self.roc_auc))
                 file.write('Precision-recall AUC: {}\n'.format(self.pr_auc))
+                file.write(f'F1-score: {self.f1}\n')
+                file.write(f'Precision: {self.p}\n')
+                file.write(f'Recall: {self.r}\n')
+                file.write(f'Specificity: {self.specificity}\n')
+                file.write(f'Accuracy: {self.accuracy}\n')
+                file.write(f'Threshold: {self.threshold}\n')
                 file.write('-'*70 + '\n')
                 file.write(classification_report(self.data.testing_labels(),self.predictions))
         else:
@@ -116,5 +113,11 @@ class NNModelTester(ModelTester):
             print('Loss on test dataset: {:.4g} \n'.format(self.test_loss))
             print('ROC curve AUC: {}\n'.format(self.roc_auc))
             print('Precision-recall AUC: {}\n'.format(self.pr_auc))
+            print(f'F1-score: {self.f1}\n')
+            print(f'Precision: {self.p}\n')
+            print(f'Recall: {self.r}\n')
+            print(f'Specificity: {self.specificity}\n')
+            print(f'Accuracy: {self.accuracy}\n')
+            print(f'Threshold: {self.threshold}\n')
             print('-'*70 + '\n')
             print(classification_report(self.data.testing_labels(),self.predictions))

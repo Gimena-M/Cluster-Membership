@@ -46,8 +46,9 @@ class NNModelController:
 
     def main(self, model_exists: bool = False, resume_training: bool = False, 
              read_data: bool = False, prep_data: bool = False,
-             thresholds: list|None = None, best_thresholds: bool = False, loss_lims: tuple = (None,None),
+             loss_lims: tuple = (None,None), optimize_threshold: bool = True,
              test_name: str|None = None, retrain_name: str|None = None):
+        #thresholds: list|None = None, best_thresholds: bool = False, 
         
         if read_data:
             self.data.main()
@@ -72,4 +73,4 @@ class NNModelController:
         test_name = test_name if test_name else self.name
 
         self.tester = NNModelTester(model= self.trainer.model, data= self.data, name= test_name, history= self.trainer.history)
-        self.tester.main(extra_args= self.trainer.args(), thresholds= thresholds, best_thresholds=best_thresholds, loss_lims=loss_lims)
+        self.tester.main(optimize_threshold= optimize_threshold, extra_args= self.trainer.args(), loss_lims=loss_lims) #, thresholds= thresholds, best_thresholds=best_thresholds, 
