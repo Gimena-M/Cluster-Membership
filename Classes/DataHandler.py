@@ -136,11 +136,7 @@ class DataHandler:
                 cond = (cond) & (df_cl.n500_cl <= self.max_n500)
 
             df_cl = df_cl[cond]
-            try:
-                self.data['id_cl_near'] = [eval(s) for s in self.data['id_cl_near']] # this column is saved as a string in the .csv, and needs to be evaluated
-            except:
-                pass # in case it has alredy been evaluated...
-            self.data = self.data[[any([id in df_cl['id_cl'].values for id in gal.id_cl_near]) for _,gal in self.data.iterrows()]]
+            self.data = self.data[[id in df_cl.id_cl.values for id in self.data.id_cl_near]]
 
     def feature_limits(self):
 

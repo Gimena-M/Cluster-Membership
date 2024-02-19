@@ -32,7 +32,7 @@ from NNModelTrainer import NNModelTrainer
 class NNModelController:
 
     def __init__(self, data: DataHandler, name: str, 
-                 layers: list = [], compile_params: dict = {}, epochs: int = 60, normalization: bool = True, weights: bool = True, verbose: int = 2, patience: int = 20, batch_size: int = 4096):
+                 layers: list = [], compile_params: dict = {}, epochs: int = 1000, normalization: bool = True, weights: bool = True, verbose: int = 2, patience: int = 20, batch_size: int = 4096):
         self.data = data
         self.layers = layers
         self.name = name
@@ -44,9 +44,10 @@ class NNModelController:
         self.patience = patience
         self.batch_size = batch_size
 
-
-    def main(self, model_exists: bool = False, read_data: bool = False, prep_data: bool = False,
-             thresholds: list|None = None, best_thresholds: bool = False, loss_lims: tuple = (None,None)):
+    def main(self, model_exists: bool = False, resume_training: bool = False, 
+             read_data: bool = False, prep_data: bool = False,
+             thresholds: list|None = None, best_thresholds: bool = False, loss_lims: tuple = (None,None),
+             test_name: str|None = None, retrain_name: str|None = None):
         
         if read_data:
             self.data.main()
@@ -59,8 +60,16 @@ class NNModelController:
         
         if model_exists:
             self.trainer.load_model()
+            if resume_training:
+                if retrain_name: 
+                    self.name = retrain_name
+                    self.trainer.name = retrain_name
+                self.trainer.train_model()
         else:
+            self.trainer.make_model()
             self.trainer.train_model()
 
-        self.tester = NNModelTester(model= self.trainer.model, data= self.data, name= self.name, history= self.trainer.history)
+        test_name = test_name if test_name else self.name
+
+        self.tester = NNModelTester(model= self.trainer.model, data= self.data, name= test_name, history= self.trainer.history)
         self.tester.main(extra_args= self.trainer.args(), thresholds= thresholds, best_thresholds=best_thresholds, loss_lims=loss_lims)

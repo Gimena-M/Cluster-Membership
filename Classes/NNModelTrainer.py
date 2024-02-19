@@ -13,7 +13,7 @@ Arguments for instantiation are:
     * patience (int): Patience for early-stopping callback. If 0, then the callback is not used.
 
 The params_search method does not work here... :3
-The train_model method does not take any arguments. The model and trainig history are saved to a 'saved_models' directory.
+The make_model and train_model methods do not take any arguments. The model and trainig history are saved to a 'saved_models' directory.
 
 Model and training history can be loaded from 'saved_models' with the load_model method.
 
@@ -54,6 +54,11 @@ class NNModelTrainer(ModelTrainer):
     def params_search(self):
         raise NotImplementedError("Hyperparameter search not implemented")
 
+    def make_model(self):
+        self.normalize()
+        self.model = tf.keras.Sequential(self.layers)
+        self.model.compile(**self.compile_params)
+
     def train_model(self):
 
         callbacks = [
@@ -64,12 +69,7 @@ class NNModelTrainer(ModelTrainer):
         
         if self.patience:
             callbacks.append(tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.patience, restore_best_weights=True))
-
-        self.normalize()
-
-        # make model and compile. Make dict with arguments for fit function.
-        self.model = tf.keras.Sequential(self.layers)
-        self.model.compile(**self.compile_params)
+        
         fit_params = dict(
             x = self.data.training_features().values,
             y = self.data.training_labels().values,
@@ -100,4 +100,4 @@ class NNModelTrainer(ModelTrainer):
         if self.normalization:
             norm = tf.keras.layers.Normalization(input_shape=(len(self.data.features),))
             norm.adapt(data = self.data.training_features().values)
-            self.layers.insert(0, norm)
+            self.layers.insert(0, norm)      

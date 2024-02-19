@@ -29,7 +29,7 @@ compile_params = dict(
     metrics=[]   
 )
 
-name = 'all_features+sigmas'
+name = 'all_features_sigmas'
 
 mod = NNModelController(layers= layers, name= name, data= data, compile_params= compile_params, epochs= 1000, batch_size= 2000)
 mod.main(read_data= False, prep_data= False)
