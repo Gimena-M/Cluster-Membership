@@ -4,7 +4,7 @@ Class to handle data reading and preparing.
 Arguments for initialization are:
     * validation_sample (bool): When splitting into training and testing samples, include a validation sample?
     * features_txt (str): txt file with a list of features (must be in the DATA directory)
-    * fields_list (list): List of HSC fields. (default: ["W01", "W02", "W03", "W04"])
+    * fields_list (list): List of HSC fields. (default: ["W02", "W03", "W04", "W05", "W06", "W07"])
     * z_filtered (bool): Use tables where galaxies were removed if their redshift differed significantly from the redshift of the nearest BCG? (default: False)
     * min_n500 (int), max_n500 (int): Limits for the nearest cluster n500. (default: None)
     * min_z (float), max_z (float): Limits for the nearest cluster z. (default: None)
@@ -110,12 +110,12 @@ class DataHandler:
             self.features = file.read().splitlines()
 
         # print number of members
-        n_mem = self.data[self.data.member == 1].shape[0]
-        n_no = self.data[self.data.member == 0].shape[0]
-        n = self.data.shape[0]
-        print ('Members: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
-        print ('Non members: {} ({:.2f}%)'.format(n_no, n_no/n*100))
-        print('-'*70)
+        # n_mem = self.data[self.data.member == 1].shape[0]
+        # n_no = self.data[self.data.member == 0].shape[0]
+        # n = self.data.shape[0]
+        # print ('Members: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
+        # print ('Non members: {} ({:.2f}%)'.format(n_no, n_no/n*100))
+        # print('-'*70)
 
     def z_n500_limits(self):
 
@@ -158,12 +158,12 @@ class DataHandler:
             self.data = self.data[c]
 
             # print number of members
-            n_mem = self.data[self.data.member == 1].shape[0]
-            n_no = self.data[self.data.member == 0].shape[0]
-            n = self.data.shape[0]
-            print ('Members after feature limits: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
-            print ('Non members after feature limits: {} ({:.2f}%)'.format(n_no, n_no/n*100))
-            print('-'*70)
+            # n_mem = self.data[self.data.member == 1].shape[0]
+            # n_no = self.data[self.data.member == 0].shape[0]
+            # n = self.data.shape[0]
+            # print ('Members after feature limits: {} ({:.2f}%)'.format(n_mem, n_mem/n*100))
+            # print ('Non members after feature limits: {} ({:.2f}%)'.format(n_no, n_no/n*100))
+            # print('-'*70)
 
     def split_2(self):
 

@@ -90,11 +90,9 @@ class ModelTester:
         self.accuracy = accuracy_score(self.data.testing_labels(), self.predictions)
 
     def optimize_threshold(self):
-        from sklearn.metrics import confusion_matrix
-
         # With F-Score
         fscore = (2 * self.prec * self.rec) / (self.prec + self.rec)
-        self.best_threshold_index_pr = np.argmax(fscore)
+        self.best_threshold_index_pr = np.nanargmax(fscore)
         self.threshold = self.thres_pr[self.best_threshold_index_pr]
     
 
