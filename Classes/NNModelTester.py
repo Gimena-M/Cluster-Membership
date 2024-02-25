@@ -22,8 +22,6 @@ File Saving:
 from DataHandler import DataHandler
 from ModelTester import ModelTester
 
-import numpy as np
-
 class NNModelTester(ModelTester):
 
     plots = ["loss", "confusion matrix", "roc", "precision-recall"]

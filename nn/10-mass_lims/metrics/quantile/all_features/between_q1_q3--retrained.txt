@@ -1,0 +1,61 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization (Normalizatio  (None, 61)               123       
+ n)                                                              
+                                                                 
+ dense (Dense)               (None, 512)               31744     
+                                                                 
+ dropout (Dropout)           (None, 512)               0         
+                                                                 
+ dense_1 (Dense)             (None, 512)               262656    
+                                                                 
+ dropout_1 (Dropout)         (None, 512)               0         
+                                                                 
+ dense_2 (Dense)             (None, 1)                 513       
+                                                                 
+=================================================================
+Total params: 295,036
+Trainable params: 294,913
+Non-trainable params: 123
+_________________________________________________________________
+
+
+features_txt: all_features.txt 
+fields_list: ['W02', 'W03', 'W04', 'W05', 'W06', 'W07'] 
+z_filtered: False 
+min_n500: None 
+max_n500: None 
+min_z: None 
+max_z: None 
+feat_max: {'log_st_mass': 10.841} 
+feat_min: {'log_st_mass': 10.131} 
+random_state: 42 
+balance: weights 
+----------------------------------------------------------------------
+epochs: 1000 
+normalization: True 
+weights: True 
+----------------------------------------------------------------------
+Optimizer: Adam 
+Loss function: binary_crossentropy 
+----------------------------------------------------------------------
+Loss on test dataset: 0.6201 
+ROC curve AUC: 0.7070345310434274
+Precision-recall AUC: 0.5077140437592959
+F1-score: 0.5529389549782849
+Precision: 0.45263436823742437
+Recall: 0.7103548655392293
+Specificity: 0.5911460051461371
+Accuracy: 0.6295874122748201
+Threshold: 0.4694504141807556
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.81      0.59      0.68     30314
+           1       0.45      0.71      0.55     14428
+
+    accuracy                           0.63     44742
+   macro avg       0.63      0.65      0.62     44742
+weighted avg       0.70      0.63      0.64     44742
