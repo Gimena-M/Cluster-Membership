@@ -22,6 +22,8 @@ A model can be loaded from 'saved_models' with the load_model method.
 
 """
 
+import math
+from matplotlib import pyplot as plt
 import pandas as pd
 
 class ModelTrainer:
@@ -30,7 +32,7 @@ class ModelTrainer:
     # model 
     # data: DataHandler
 
-    def params_search(self, search_param_distr: dict, search_params: dict, search_class: str, name:str = "search"):
+    def params_search(self, search_param_distr: dict, search_params: dict, search_class: str, name:str = "search", plot_to_file: bool = True):
 
         # search instantiation and fitting
         # halving searches try every model with a reduced number of samples, select the best models, and repeat with more samples
@@ -54,19 +56,25 @@ class ModelTrainer:
         search_model.fit(self.data.training_features(), self.data.training_labels())
 
         # save and print results
-        df_res = pd.DataFrame(search_model.cv_results_).sort_values('rank_test_score')
-        df_res.to_csv(f'search_results/{name}.csv', index= False)
-        print('-'*70)
-        print(f"Best model: score {search_model.best_score_}")
-        print(search_model.best_estimator_)
-        # print('-'*70)
-        # if 'Halving' in search_class:
-        #     print(df_res[df_res.iter == search_model.n_iterations_].sort_values('rank_test_score'))
-        # else:
-        #     print(df_res.sort_values('rank_test_score').head(15)) 
+        self.search_res = pd.DataFrame(search_model.cv_results_) #.sort_values('rank_test_score')
+        self.search_res.to_csv(f'search_results/{name}.csv', index= False)
 
-        self.model =  search_model.best_estimator_
-        self.save_model()
+        try:
+            print('-'*70)
+            print(f"Best model: score {search_model.best_score_}")
+            print(search_model.best_estimator_)
+            # print('-'*70)
+            # if 'Halving' in search_class:
+            #     print(df_res[df_res.iter == search_model.n_iterations_].sort_values('rank_test_score'))
+            # else:
+            #     print(df_res.sort_values('rank_test_score').head(15)) 
+
+            self.model =  search_model.best_estimator_
+            self.save_model()
+        except:
+            print("Best model: not selected")
+
+        self.plot_search(plot_to_file= plot_to_file)
         return self.model
 
     def train_model(self, model_params: dict):
@@ -86,3 +94,19 @@ class ModelTrainer:
     def args(self):
         return self.model.get_params()
 
+    def plot_search(self, plot_to_file: bool = True):
+        params = [s for s in self.search_res.columns if 'param_' in s]
+        metrics = [s for s in self.search_res.columns if 'mean_test_' in s]
+
+        for metric in metrics:
+            plt.figure(figsize=(15., math.ceil(len(params)/3.) * 4.))
+            for i,param in enumerate(params):
+                plt.subplot(math.ceil(len(params)/3.), 3, i + 1)
+                plt.scatter(self.search_res[param].fillna(value=0), self.search_res[metric], marker= 'x', alpha = 0.5)
+                plt.xlabel(param.replace('param_',''))
+                plt.ylabel(metric)
+            if plot_to_file:
+                plt.savefig(f'search_results/{self.name}__{metric}.png', dpi=150, bbox_inches= 'tight')
+                plt.close()
+            else:
+                plt.show()

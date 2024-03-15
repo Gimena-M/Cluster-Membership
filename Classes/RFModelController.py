@@ -13,16 +13,16 @@ The search_main() method performs a hyperparameter search. It has the following 
     * search_class (str): Name of the search class to be used. Can be 'GridSearchCV', 'RandomizedSearchCV', 'HalvingGridSearchCV' or 'HalvingRandomSearchCV'
     * read_data (bool): Read and prepare the data (run data.main())? (default: False)
     * prep_data (bool): If the data has already been read, prepare the data (run data.prep())? (default: False)
-    * thresholds (list or None): List of thresholds to be tested. (default: None)
-    * best_thresholds (bool): Compute thresholds that maximize F-Score or G-Means? (default: False)
+    * test (bool): Test the best model? (default: False)
+    * optimize_threshold (bool): Use decision threshold that maximizes F1-score? (default: True)
+    * sort_importances (bool): Sort features in descending order of importance when plotting feature importances? (default: True)
 By default it assumes that data has already been read and prepared.
 
 The model_main() method can train and test a model. It has the following arguments:
     * model_params (dict): Parameters for the model. (default: {})
     * read_data (bool): Read and prepare the data (run data.main())? (default: False)
     * prep_data (bool): If the data has already been read, prepare the data (run data.prep())? (default: False)
-    * thresholds (list or None): List of thresholds to be tested. (default: None)
-    * best_thresholds (bool): Compute thresholds that maximize F-Score or G-Means? (default: False)
+    * optimize_threshold (bool): Use decision threshold that maximizes F1-score? (default: True)
     * sort_importances (bool): Sort features in descending order of importance when plotting feature importances? (default: True)
 By default it assumes that data has already been read and prepared, and that the model has not been trained.
 
@@ -39,14 +39,14 @@ from RFModelTrainer import RFModelTrainer
 class RFModelController:
 
     def __init__(self, data: DataHandler, name: str, 
-                 model: RandomForestClassifier = RandomForestClassifier(bootstrap= True, n_jobs = -1, verbose= 0, class_weight= 'balanced')):
+                 model: RandomForestClassifier = RandomForestClassifier(bootstrap= True, n_jobs = -1, verbose= 0, class_weight= 'balanced_subsample')):
         self.name = name
         self.data = data
         self.model = model
 
     def main_search(self, search_param_distr: dict, search_params: dict, search_class: str,
                read_data: bool = False, prep_data: bool = False,
-               thresholds: list|None = None, best_thresholds: bool = False):
+               test: bool = False, optimize_threshold: bool = True, sort_importances: bool = True):
         
         if read_data:
             self.data.main()
@@ -55,13 +55,14 @@ class RFModelController:
 
         self.trainer = RFModelTrainer(data = self.data, name = self.name, model = self.model)
         self.trainer.params_search(search_param_distr= search_param_distr, search_params= search_params, search_class= search_class, name = self.name)
-
-        self.tester = RFModelTester(model= self.trainer.model, data= self.data, name= self.name)
-        self.tester.main(extra_args= self.trainer.args(), thresholds= thresholds, best_thresholds=best_thresholds)
+        
+        if test:
+            self.tester = RFModelTester(model= self.trainer.model, data= self.data, name= self.name)
+            self.tester.main(extra_args= self.trainer.args(), optimize_threshold = optimize_threshold, sort_importances = sort_importances)
     
     def main_model(self, model_params: dict = {}, model_exists: bool = False,
               read_data: bool = False, prep_data: bool = False,
-              thresholds: list|None = None, best_thresholds: bool = False, sort_importances: bool = True):
+              optimize_threshold: bool = True, sort_importances: bool = True):
 
         if read_data:
             self.data.main()
@@ -76,4 +77,4 @@ class RFModelController:
             self.trainer.train_model(model_params=model_params)
 
         self.tester = RFModelTester(model= self.trainer.model, data= self.data, name= self.name)
-        self.tester.main(extra_args= self.trainer.args(), thresholds= thresholds, best_thresholds=best_thresholds, sort_importances= sort_importances)
+        self.tester.main(extra_args= self.trainer.args(), optimize_threshold = optimize_threshold, sort_importances= sort_importances)

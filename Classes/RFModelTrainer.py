@@ -29,7 +29,7 @@ from sklearn.ensemble import RandomForestClassifier
 class RFModelTrainer(ModelTrainer):
 
     def __init__(self, data: DataHandler, name: str,
-                 model = RandomForestClassifier(bootstrap= True, n_jobs = -1, verbose= 0, class_weight= 'balanced')):
+                 model = RandomForestClassifier(bootstrap= True, n_jobs = -1, verbose= 0, class_weight= 'balanced_subsample')):
         self.model = model
         self.data = data
         self.name = name

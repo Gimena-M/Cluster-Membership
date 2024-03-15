@@ -7,14 +7,13 @@ Arguments for initialization are:
     * name (str): Name to be used on file names that save metrics.
 
 The main() method performs the tests used by most scripts. Its arguments are:
-    * thresholds (list or None): List of thresholds to be tested. (default: None)
-    * best_thresholds (bool): Compute thresholds that maximize F-Score or G-Means? (default: False)
+    * optimize_threshold (bool): Use decision threshold that maximizes F1-score? (default: True)
     * extra_args (dict): Extra arguments to be saved in a txt file along with metrics. (default: {})
     * sort_importances (bool): Sort features in descending order of importance when plotting feature importances? (default: True)
 
 File Saving:
     * Most plots are saved to a .png file.
-    * Thresholds plots and importances plots are saved to different .png files.
+    * Importances plots are saved to different .png files.
     * Other metrics (Loss, AUC, etc.), arguments used, and model summaries are saved to a .txt file.
     * Files are saved in a 'metrics' directory.
 """
@@ -33,8 +32,8 @@ class RFModelTester(ModelTester):
     cols: int = 3
     figsize: tuple = (16,4)
 
-    def main(self, thresholds: bool = False, best_thresholds: bool = False, extra_args: dict = {}, sort_importances: bool = True):
-        super().main(thresholds, best_thresholds, extra_args)
+    def main(self, optimize_threshold: bool = True, extra_args: dict = {}, sort_importances: bool = True):
+        super().main(optimize_threshold, extra_args)
         self.plot_importances(sort_importances= sort_importances)
 
     def write_report(self, extra_args: dict = {}):
@@ -59,7 +58,7 @@ class RFModelTester(ModelTester):
             file.write('-'*70 + '\n')
             file.write(classification_report(self.data.testing_labels(),self.predictions))
 
-    def plot_importances(self, sort_importances: bool = True):
+    def plot_importances(self, sort_importances: bool = True, to_file: bool = True):
         # save plot of feature importances
 
         plt.figure(figsize= (16, 18))
@@ -72,5 +71,8 @@ class RFModelTester(ModelTester):
             sns.barplot(x = self.model.feature_importances_, y = self.data.features)
        
         plt.grid()
-        plt.savefig(f'metrics/importances_{self.name}.png', dpi=150, bbox_inches= 'tight')
-        plt.close()        
+        if to_file:
+            plt.savefig(f'metrics/importances_{self.name}.png', dpi=150, bbox_inches= 'tight')
+            plt.close()   
+        else: 
+            plt.show()     

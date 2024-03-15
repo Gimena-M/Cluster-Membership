@@ -16,8 +16,7 @@ The main() method has the following optional arguments:
     * model_exists (bool): Has the model already been trained and saved? (default: False)
     * read_data (bool): Read and prepare the data (run data.main())? (default: False)
     * prep_data (bool): If the data has already been read, prepare the data (run data.prep())? (default: False)
-    * thresholds (list or None): List of thresholds to be tested. (default: None)
-    * best_thresholds (bool): Compute thresholds that maximize F-Score or G-Means? (default: False)
+    * optimize_threshold (bool): Use decision threshold that maximizes F1-score? (default: True)
     * loss_lims (tuple): y limits for a loss vs epochs plot. (default: (None, None))
 By default it assumes that data has already been read and prepared, and that the model has not been trained.
 
