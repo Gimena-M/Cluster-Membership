@@ -89,7 +89,7 @@ class ModelTrainer:
     
     def save_model(self):
         import joblib
-        joblib.dump(self.model, f'saved_models/{self.name}.joblib')
+        joblib.dump(self.model, f'saved_models/{self.name}.joblib', protocol= -1, compress = 4)
 
     def args(self):
         return self.model.get_params()

@@ -15,7 +15,7 @@ The search_main() method performs a hyperparameter search. It has the following 
     * prep_data (bool): If the data has already been read, prepare the data (run data.prep())? (default: False)
     * test (bool): Test the best model? (default: False)
     * optimize_threshold (bool): Use decision threshold that maximizes F1-score? (default: True)
-    * sort_importances (bool): Sort features in descending order of importance when plotting feature importances? (default: True)
+    * sort_importances (str|None): Sort features in descending order of gini or permutation importance when plotting feature importances? Takes values None (no sorting), 'gini', and 'permutation' (default: 'permutation')
 By default it assumes that data has already been read and prepared.
 
 The model_main() method can train and test a model. It has the following arguments:
@@ -23,7 +23,7 @@ The model_main() method can train and test a model. It has the following argumen
     * read_data (bool): Read and prepare the data (run data.main())? (default: False)
     * prep_data (bool): If the data has already been read, prepare the data (run data.prep())? (default: False)
     * optimize_threshold (bool): Use decision threshold that maximizes F1-score? (default: True)
-    * sort_importances (bool): Sort features in descending order of importance when plotting feature importances? (default: True)
+    * sort_importances (str|None): Sort features in descending order of gini or permutation importance when plotting feature importances? Takes values None (no sorting), 'gini', and 'permutation' (default: 'permutation')
 By default it assumes that data has already been read and prepared, and that the model has not been trained.
 
 """
@@ -46,7 +46,7 @@ class RFModelController:
 
     def main_search(self, search_param_distr: dict, search_params: dict, search_class: str,
                read_data: bool = False, prep_data: bool = False,
-               test: bool = False, optimize_threshold: bool = True, sort_importances: bool = True):
+               test: bool = False, optimize_threshold: bool = True, sort_importances: str|None = 'permutation'):
         
         if read_data:
             self.data.main()
@@ -62,7 +62,7 @@ class RFModelController:
     
     def main_model(self, model_params: dict = {}, model_exists: bool = False,
               read_data: bool = False, prep_data: bool = False,
-              optimize_threshold: bool = True, sort_importances: bool = True):
+              optimize_threshold: bool = True, sort_importances: str|None = 'permutation'):
 
         if read_data:
             self.data.main()
