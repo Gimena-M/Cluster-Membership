@@ -75,16 +75,8 @@ class NNModelTester(ModelTester):
                     
                 file.write('-'*70 + '\n')
                 file.write('Loss on test dataset: {:.4g} \n'.format(self.test_loss))
-                file.write('ROC curve AUC: {}\n'.format(self.roc_auc))
-                file.write('Precision-recall AUC: {}\n'.format(self.pr_auc))
-                file.write(f'F1-score: {self.f1}\n')
-                file.write(f'Precision: {self.p}\n')
-                file.write(f'Recall: {self.r}\n')
-                file.write(f'Specificity: {self.specificity}\n')
-                file.write(f'Accuracy: {self.accuracy}\n')
-                file.write(f'Threshold: {self.threshold}\n')
-                file.write('-'*70 + '\n')
-                file.write(classification_report(self.data.testing_labels(),self.predictions))
+                for metric in self._metrics_report():
+                    file.write(metric)
         else:
             print(self.model.summary())
             print('\n\n')
@@ -109,13 +101,5 @@ class NNModelTester(ModelTester):
                 
             print('-'*70 + '\n')
             print('Loss on test dataset: {:.4g} \n'.format(self.test_loss))
-            print('ROC curve AUC: {}\n'.format(self.roc_auc))
-            print('Precision-recall AUC: {}\n'.format(self.pr_auc))
-            print(f'F1-score: {self.f1}\n')
-            print(f'Precision: {self.p}\n')
-            print(f'Recall: {self.r}\n')
-            print(f'Specificity: {self.specificity}\n')
-            print(f'Accuracy: {self.accuracy}\n')
-            print(f'Threshold: {self.threshold}\n')
-            print('-'*70 + '\n')
-            print(classification_report(self.data.testing_labels(),self.predictions))
+            for metric in self._metrics_report():
+                    print(metric)

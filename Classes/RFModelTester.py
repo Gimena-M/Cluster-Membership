@@ -32,9 +32,10 @@ class RFModelTester(ModelTester):
     cols: int = 3
     figsize: tuple = (16,4)
 
-    def main(self, optimize_threshold: bool = True, extra_args: dict = {}, sort_importances: str|None = 'permutation'):
+    def main(self, optimize_threshold: bool = True, extra_args: dict = {}, sort_importances: str|None = 'permutation', importances: bool = True):
         super().main(optimize_threshold, extra_args)
-        self.plot_importances(sort_importances= sort_importances)
+        if importances:
+            self.plot_importances(sort_importances= sort_importances)
 
     def write_report(self, extra_args: dict = {}):
 
@@ -52,11 +53,8 @@ class RFModelTester(ModelTester):
             for key in extra_args:
                 file.write(f'{key}: {extra_args[key]} \n')
             file.write('-'*70 + '\n')
-            file.write('Model score: {:.4g} \n'.format(model_score))
-            file.write('ROC curve AUC: {}\n'.format(auc(self.fpr, self.tpr)))
-            file.write('Precision-recall AUC: {}\n'.format(auc(self.rec, self.prec)))
-            file.write('-'*70 + '\n')
-            file.write(classification_report(self.data.testing_labels(),self.predictions))
+            for metric in self._metrics_report():
+                    file.write(metric)
 
     def plot_importances(self, sort_importances: str|None = 'permutation', to_file: bool = True):
         # save plot of feature importances

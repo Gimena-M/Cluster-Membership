@@ -1,0 +1,69 @@
+bootstrap: True 
+ccp_alpha: 0.0 
+class_weight: balanced_subsample 
+criterion: entropy 
+max_depth: 50 
+max_features: sqrt 
+max_leaf_nodes: None 
+max_samples: None 
+min_impurity_decrease: 0.0 
+min_samples_leaf: 15 
+min_samples_split: 20 
+min_weight_fraction_leaf: 0.0 
+monotonic_cst: None 
+n_estimators: 250 
+n_jobs: -1 
+oob_score: False 
+random_state: None 
+verbose: 10 
+warm_start: False 
+----------------------------------------------------------------------
+features_txt: all_features.txt 
+fields_list: ['W02', 'W03', 'W04', 'W05', 'W06', 'W07'] 
+z_filtered: False 
+min_n500: None 
+max_n500: None 
+min_z: None 
+max_z: None 
+feat_max: {} 
+feat_min: {} 
+random_state: 42 
+balance: weights 
+bootstrap: True 
+ccp_alpha: 0.0 
+class_weight: balanced_subsample 
+criterion: entropy 
+max_depth: 50 
+max_features: sqrt 
+max_leaf_nodes: None 
+max_samples: None 
+min_impurity_decrease: 0.0 
+min_samples_leaf: 15 
+min_samples_split: 20 
+min_weight_fraction_leaf: 0.0 
+monotonic_cst: None 
+n_estimators: 250 
+n_jobs: -1 
+oob_score: False 
+random_state: None 
+verbose: 10 
+warm_start: False 
+----------------------------------------------------------------------
+ROC curve AUC: 0.7399908095380368
+Precision-recall AUC: 0.5551590884890936
+F1-score: 0.5768453499618623
+Precision: 0.46378919018024795
+Recall: 0.76278711877801
+Specificity: 0.5785019232871811
+Accuracy: 0.6380969033824385
+Log loss: 13.04430977493156
+Threshold: 0.40106052206627935
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.84      0.58      0.68    201218
+           1       0.46      0.76      0.58     96171
+
+    accuracy                           0.64    297389
+   macro avg       0.65      0.67      0.63    297389
+weighted avg       0.72      0.64      0.65    297389

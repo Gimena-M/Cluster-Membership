@@ -61,8 +61,8 @@ class RFModelController:
             self.tester.main(extra_args= self.trainer.args(), optimize_threshold = optimize_threshold, sort_importances = sort_importances)
     
     def main_model(self, model_params: dict = {}, model_exists: bool = False,
-              read_data: bool = False, prep_data: bool = False,
-              optimize_threshold: bool = True, sort_importances: str|None = 'permutation'):
+              read_data: bool = False, prep_data: bool = False, test: bool = True,
+              optimize_threshold: bool = True, sort_importances: str|None = 'permutation', importances: bool = True):
 
         if read_data:
             self.data.main()
@@ -76,5 +76,6 @@ class RFModelController:
         else:
             self.trainer.train_model(model_params=model_params)
 
-        self.tester = RFModelTester(model= self.trainer.model, data= self.data, name= self.name)
-        self.tester.main(extra_args= self.trainer.args(), optimize_threshold = optimize_threshold, sort_importances= sort_importances)
+        if test:
+            self.tester = RFModelTester(model= self.trainer.model, data= self.data, name= self.name)
+            self.tester.main(extra_args= self.trainer.args(), optimize_threshold = optimize_threshold, sort_importances= sort_importances, importances= importances)

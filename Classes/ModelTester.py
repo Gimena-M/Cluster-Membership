@@ -80,7 +80,7 @@ class ModelTester:
         self.prec, self.rec, self.thres_pr = precision_recall_curve(self.data.testing_labels(), self.scores, pos_label= 1)
 
     def compute_metrics (self):
-        from sklearn.metrics import auc, f1_score, precision_score, recall_score, accuracy_score
+        from sklearn.metrics import auc, f1_score, precision_score, recall_score, accuracy_score, log_loss
         self.roc_auc = auc(self.fpr, self.tpr)
         self.pr_auc = auc(self.rec, self.prec)
         self.f1 = f1_score(self.data.testing_labels(), self.predictions)
@@ -88,6 +88,7 @@ class ModelTester:
         self.r = recall_score(self.data.testing_labels(), self.predictions, pos_label= 1)
         self.specificity = recall_score(self.data.testing_labels(), self.predictions, pos_label= 0)
         self.accuracy = accuracy_score(self.data.testing_labels(), self.predictions)
+        self.log_loss = log_loss(self.data.testing_labels(), self.predictions)
 
     def optimize_threshold(self):
         # With F-Score
@@ -99,6 +100,23 @@ class ModelTester:
     def write_report(self, extra_args: dict = {}, to_file = True):
         # save a txt file with metrics and arguments used.
         pass 
+
+    def _metrics_report(self):
+        from sklearn.metrics import classification_report
+        a = [
+            'ROC curve AUC: {}\n'.format(self.roc_auc),
+            'Precision-recall AUC: {}\n'.format(self.pr_auc),
+            f'F1-score: {self.f1}\n',
+            f'Precision: {self.p}\n',
+            f'Recall: {self.r}\n',
+            f'Specificity: {self.specificity}\n',
+            f'Accuracy: {self.accuracy}\n',
+            f'Log loss: {self.log_loss}\n'
+            f'Threshold: {self.threshold}\n',
+            '-'*70 + '\n',
+            classification_report(self.data.testing_labels(),self.predictions),
+        ]
+        return a
 
     def plot_report(self, loss_lims = (None,None), to_file = True):
         # save the plots given by the "plot" attribute to a file.
