@@ -65,13 +65,13 @@ class RFModelTester(ModelTester):
         perm = pi['average_precision'].importances_mean
         gini = self.model.feature_importances_
 
-        plt.figure(figsize= (10, len(self.data.features)/3.))
-        
         importances = pd.DataFrame(dict(permutation = perm, gini = gini, feature = self.data.features))
+        importances.to_csv(f'metrics/importances_{self.name}.csv')
         if sort_importances:
             importances = importances.sort_values(by = sort_importances, ascending= False)
         importances = pd.melt(importances, var_name="type", value_name="importance", id_vars= 'feature')
 
+        plt.figure(figsize= (10, len(self.data.features)/3.))
         sns.barplot(data = importances, x = 'importance', y = 'feature', hue = 'type', orient = 'h')
         plt.grid()
         if to_file:

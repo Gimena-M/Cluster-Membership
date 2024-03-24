@@ -24,6 +24,17 @@ data.main()
 cont = RFModelController(data =data, name = 'all_features')
 cont.main_model(model_params= params, sort_importances= 'permutation', optimize_threshold= True)
 
+# i will use the same model for the feature sets that don't give good results
+data.features_txt = 'all_features_abs_mags.txt'
+data.features_labels()
+cont = RFModelController(data =data, name = 'all_features_abs_mags')
+cont.main_model(model_params= params, sort_importances= 'permutation', optimize_threshold= True)
+
+data.features_txt = 'all_features_z_mass.txt'
+data.features_labels()
+cont = RFModelController(data =data, name = 'all_features_z_mass')
+cont.main_model(model_params= params, sort_importances= 'permutation', optimize_threshold= True)
+
 #---------------------------------------------------
 
 # data = DataHandler(validation_sample= False, features_txt= 'all_features.txt', fields_list=['W06'])
