@@ -49,11 +49,11 @@ class IdRetriever:
     def _read_dats(self):
         print('Reading .dat files...', flush= True)
 
-        self.df_cl =pd.read_table(f'{self.dir}Wen+Han/clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
+        self.df_cl =pd.read_table(f'{self.dir}Wen+Han/clusters.dat', sep='\s+', usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
 
-        self.df_mem = pd.read_table(f'{self.dir}Wen+Han/members.dat', delim_whitespace=True, usecols=[0,1,2,3,18,19], names=['id_cl','ra','dec', 'phot_z', 'log_mass', 'dist'])
+        self.df_mem = pd.read_table(f'{self.dir}Wen+Han/members.dat', sep='\s+', usecols=[0,1,2,3,18,19], names=['id_cl','ra','dec', 'phot_z', 'log_mass', 'dist'])
 
-        self.df_gal = pd.read_table(f'{self.dir}Wen+Han/{self.name}.dat', delim_whitespace=True, usecols=[0,1,12,13,14,15,16,17,18], names=['ra','dec', 'W1', 'W1_err', 'W2', 'W2_err', 'phot_z', 'phot_z_err', 'log_st_mass'])
+        self.df_gal = pd.read_table(f'{self.dir}Wen+Han/{self.name}.dat', sep='\s+', usecols=[0,1,12,13,14,15,16,17,18], names=['ra','dec', 'W1', 'W1_err', 'W2', 'W2_err', 'phot_z', 'phot_z_err', 'log_st_mass'])
 
         # restrict clusters coordinates to those of the galaxies...
         if ((max(self.df_gal.ra) - 360 < 0.001) & (min(self.df_gal.ra) < 0.001)):

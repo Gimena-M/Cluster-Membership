@@ -66,7 +66,7 @@ class RFModelTester(ModelTester):
         gini = self.model.feature_importances_
 
         importances = pd.DataFrame(dict(permutation = perm, gini = gini, feature = self.data.features))
-        importances.to_csv(f'metrics/importances_{self.name}.csv')
+        importances.to_csv(f'metrics/importances_{self.name}.csv', index= False)
         if sort_importances:
             importances = importances.sort_values(by = sort_importances, ascending= False)
         importances = pd.melt(importances, var_name="type", value_name="importance", id_vars= 'feature')

@@ -34,7 +34,7 @@ class RedshiftLimits:
     def _read_files(self):
         print('Reading files...')
         if self.df_gal is None: self.df_gal = pd.read_csv(f'{self.dir}clean_tables/{self.name}.csv')
-        self.df_cl =pd.read_table(f'{self.dir}Wen+Han/clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
+        self.df_cl =pd.read_table(f'{self.dir}Wen+Han/clusters.dat', sep='\s+', usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
 
         # drop clusters not in the galaxies df. 
         self.df_cl = self.df_cl[(self.df_cl['id_cl'].isin(self.df_gal.id_cl_near)) | (self.df_cl['id_cl'].isin(self.df_gal.id_cl))]

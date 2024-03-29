@@ -49,7 +49,7 @@ class NewFeatures:
         # add z of the cluster of id_cl_near
         print("Adding nearest BCG's redshift...")
 
-        self.df_cl = pd.read_table(f'{self.dir}Wen+Han/clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
+        self.df_cl = pd.read_table(f'{self.dir}Wen+Han/clusters.dat', sep='\s+', usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
 
         # z_cl_near = np.full(self.df_gal.shape[0],-99)
         member = self.df_gal.member.values

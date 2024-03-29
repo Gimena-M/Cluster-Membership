@@ -123,7 +123,7 @@ class DataHandler:
         # df has a column 'id_cl_near', with a list of ids of the nearests clusters. 
 
         if any(val != None for val in [self.min_n500, self.max_n500, self.min_z, self.max_z]):
-            df_cl = pd.read_table(self.data_dir + 'clusters.dat', delim_whitespace=True, usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
+            df_cl = pd.read_table(self.data_dir + 'clusters.dat', sep='\s+', usecols=[0,3,4,5,9,11,12], names=['id_cl','ra_cl','dec_cl','phot_z_cl', 'r500_cl','mass_cl','n500_cl'])
 
             cond = True
             if self.min_z != None:

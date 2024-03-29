@@ -40,7 +40,7 @@ class Sigmas:
     def _read_files(self):
         print('Reading files...')
         if self.df_gal is None: self.df_gal = pd.read_csv(f'{self.dir}clean_tables/{self.name}.csv')
-        self.dat = pd.read_table(f'{self.dir}Wen+Han/{self.name}.dat', delim_whitespace=True, usecols=[0,1,16], names=['ra','dec','phot_z'])
+        self.dat = pd.read_table(f'{self.dir}Wen+Han/{self.name}.dat', sep='\s+', usecols=[0,1,16], names=['ra','dec','phot_z'])
         self.dat  = self.dat.drop_duplicates(subset = ['ra','dec'])
         self.mpc_deg = cosmo.kpc_proper_per_arcmin(self.df_gal['phot_z'].values).value / 1000 * 60  # Mpc/degree
 
