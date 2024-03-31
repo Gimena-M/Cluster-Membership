@@ -22,7 +22,7 @@ data = DataHandler(validation_sample= False, features_txt= 'all_features_bcg.txt
 data.main()
 
 cont = RFModelController(data =data, name = 'all_features_bcg')
-cont.main_model(model_params= params, sort_importances= 'permutation', optimize_threshold= True)
+cont.main_model(model_params= params, permutation_train_max_samples= 120_000)
 
 #---------------------------------------------------
 
