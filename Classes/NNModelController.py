@@ -46,7 +46,10 @@ class NNModelController:
     def main(self, model_exists: bool = False, resume_training: bool = False, 
              read_data: bool = False, prep_data: bool = False,
              loss_lims: tuple = (None,None), optimize_threshold: bool = True,
-             test_name: str|None = None, retrain_name: str|None = None):
+             test_name: str|None = None, retrain_name: str|None = None,
+             importances: list|None = ['permutation_train', 'permutation_test'], sort_importances: str|None = 'permutation_train', 
+             permutation_train_max_samples: int|float = 200_000, permutation_test_max_samples: int|float = 200_000
+             ):
         #thresholds: list|None = None, best_thresholds: bool = False, 
         
         if read_data:
@@ -72,4 +75,4 @@ class NNModelController:
         test_name = test_name if test_name else self.name
 
         self.tester = NNModelTester(model= self.trainer.model, data= self.data, name= test_name, history= self.trainer.history)
-        self.tester.main(optimize_threshold= optimize_threshold, extra_args= self.trainer.args(), loss_lims=loss_lims) #, thresholds= thresholds, best_thresholds=best_thresholds, 
+        self.tester.main(optimize_threshold= optimize_threshold, extra_args= self.trainer.args(), loss_lims=loss_lims, importances= importances, sort_importances= sort_importances, permutation_test_max_samples= permutation_test_max_samples, permutation_train_max_samples= permutation_train_max_samples) #, thresholds= thresholds, best_thresholds=best_thresholds, 

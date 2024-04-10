@@ -41,19 +41,13 @@ class ModelTester:
         self.threshold = 0.5
         # self.history = history
 
-    def main(self, optimize_threshold: bool = True, extra_args: dict = {}, loss_lims: tuple = (None, None)):
-    # thresholds: list|None = None, best_thresholds: bool = False
+    def main(self, optimize_threshold: bool = True, extra_args: dict = {}, importances: list|None = None, sort_importances: str|None = None, permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0, loss_lims: tuple = (None, None)):
         
         self.predict(optimize_threshold)
         self.write_report(extra_args)
         self.plot_report(loss_lims= loss_lims)
-
-        # # test different thresholds
-        # if thresholds:
-        #     self.test_thresholds(thresholds)
-
-        # if best_thresholds:
-        #     self.test_best_thresholds()
+        if importances:
+            self.plot_importances(importances= importances, sort_importances= sort_importances, permutation_train_max_samples= permutation_train_max_samples, permutation_test_max_samples= permutation_test_max_samples)
 
     def predict(self, optimize_threshold: bool = True):
         self.predict_score()
@@ -64,8 +58,7 @@ class ModelTester:
 
         self.predict_class()
         self.compute_metrics()
-        
-    
+
     def predict_score(self):
         scores = self.model.predict_proba(self.data.testing_features())  #probabilities
         self.scores = scores[:,1]
@@ -177,6 +170,96 @@ class ModelTester:
         plt.ylim(loss_lims)
         plt.grid()
         plt.legend()
+
+    def plot_importances(self, importances: list, sort_importances: str|None, to_file: bool = True, permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
+
+        self.compute_importances(importances= importances, sort_importances= sort_importances, permutation_train_max_samples= permutation_train_max_samples, permutation_test_max_samples= permutation_test_max_samples)
+        self._plot_importances(to_file= to_file)
+    
+    def compute_importances(self,importances: list, sort_importances: str|None, permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
+
+        imp = dict(feature = self.data.features)
+
+        for i in importances:
+            match i:
+                case 'permutation_train':
+                    perm_train = self.permutation_importance(kind= 'training', n_samples=permutation_train_max_samples)
+                    imp[i] = perm_train
+                case 'permutation_test':
+                    perm_test = self.permutation_importance(kind = 'testing', n_samples= permutation_test_max_samples)
+                    imp[i] = perm_test
+                case 'gini':
+                    gini = self.model.feature_importances_
+                    imp[i] = gini
+
+
+        # save to csv
+        imp = pd.DataFrame(imp)
+        imp.to_csv(f'metrics/{self.name}_importances.csv', index= False)
+        if sort_importances:
+            imp = imp.sort_values(by = sort_importances, ascending= False)
+
+        self.importances = imp
+
+    def _plot_importances(self, to_file: bool = True):
+        
+        imp = pd.melt(self.importances, var_name="type", value_name="importance", id_vars= 'feature')
+
+        plt.figure(figsize= (10, len(self.data.features)/2.5))
+        sns.barplot(data = imp, x = 'importance', y = 'feature', hue = 'type', orient = 'h')
+        plt.grid()
+        if to_file:
+            plt.savefig(f'metrics/{self.name}_importances.png', dpi=150, bbox_inches= 'tight')
+            plt.close()   
+        else: 
+            plt.show()
+
+    def permutation_importance(self, kind: str, n: int = 3, n_samples: int|float = 1.0):
+
+        import numpy as np
+        from sklearn.utils import shuffle
+        from sklearn.metrics import average_precision_score as ap
+
+        match kind:
+            case 'training':
+                max_samples = self.data.training.shape[0]
+                mem = self.data.training[self.data.features + ['member']][self.data.training.member == 1].values
+                nmem = self.data.training[self.data.features + ['member']][self.data.training.member == 0].values
+            case 'testing':
+                max_samples = self.data.testing.shape[0]
+                mem = self.data.testing[self.data.features + ['member']][self.data.testing.member == 1].values
+                nmem = self.data.testing[self.data.features + ['member']][self.data.testing.member == 0].values
+
+        features = self.data.features
+        importances = np.zeros(len(features))
+        
+        if n_samples >= 1.0: n_samples = min(n_samples/(mem.shape[0] + nmem.shape[0]), max_samples)
+
+        for i,feature in enumerate(features):
+
+            news = []
+            # permute n times
+            for j in range(n):
+                
+                print('\033[K', end= '\r')
+                print(f'Computing {kind} importance for {feature} ({j+1}/{n})', end='\r', flush= True)
+
+                a = mem[np.random.choice(mem.shape[0], math.ceil(n_samples*mem.shape[0]), replace=False), :]
+                b = nmem[np.random.choice(nmem.shape[0], math.ceil(n_samples*nmem.shape[0]), replace=False), :]
+                sample = np.vstack([a,b])
+
+                shuffled = shuffle(sample[:,i], random_state= 42)
+                sample[:,i] = shuffled
+
+                scores = self.return_score(sample[:,:-1])
+                news.append(ap(sample[:,-1], scores))
+
+            importances[i] = self.pr_auc - np.mean(news) 
+        return importances
+    
+    def return_score(self, sample: pd.DataFrame):
+        pass
+        
 
 
     # i have never used these methods

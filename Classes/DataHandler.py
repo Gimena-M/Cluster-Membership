@@ -282,4 +282,4 @@ class DataHandler:
                 raise ValueError("Invalid value for 'balance'")
 
     def copy(self):
-            return copy.copy(self)
+            return copy.deepcopy(self)

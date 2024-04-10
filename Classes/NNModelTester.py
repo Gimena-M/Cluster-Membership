@@ -19,6 +19,7 @@ File Saving:
 """
 
 
+from pandas import DataFrame
 from DataHandler import DataHandler
 from ModelTester import ModelTester
 
@@ -29,9 +30,14 @@ class NNModelTester(ModelTester):
     cols: int = 2
     figsize: tuple = (10,10)
 
-    def __init__(self, model, data: DataHandler, name: str, history: dict):
+    def __init__(self, model, data: DataHandler, name: str, history: dict = {}):
         super().__init__(model, data, name)
         self.history = history
+
+    def main(self, optimize_threshold: bool = True, extra_args: dict = {}, 
+              importances: list|None = ['permutation_train', 'permutation_test'], sort_importances: str|None = 'permutation_train', 
+              permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0, loss_lims: tuple = (None, None)):
+        return super().main(optimize_threshold, extra_args, importances, sort_importances, permutation_train_max_samples, permutation_test_max_samples, loss_lims)
 
     def predict_score(self):
         self.scores = self.model.predict(self.data.testing_features(), verbose = 0)  #probabilities
@@ -103,3 +109,10 @@ class NNModelTester(ModelTester):
             print('Loss on test dataset: {:.4g} \n'.format(self.test_loss))
             for metric in self._metrics_report():
                     print(metric)
+
+
+    def plot_importances(self, importances: list = ['permutation_train', 'permutation_test'], sort_importances: str|None = 'permutation_train', to_file: bool = True, permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
+        return super().plot_importances(importances, sort_importances, to_file, permutation_train_max_samples, permutation_test_max_samples)
+
+    def return_score(self, sample: DataFrame):
+        return self.model.predict(sample, verbose = 0)

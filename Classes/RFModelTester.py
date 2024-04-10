@@ -36,11 +36,12 @@ class RFModelTester(ModelTester):
     figsize: tuple = (16,4)
 
     def main(self, optimize_threshold: bool = True, extra_args: dict = {}, 
-             importances: list|None = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', 
-             permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
-        super().main(optimize_threshold, extra_args)
-        if importances:
-            self.plot_importances(importances= importances, sort_importances= sort_importances, permutation_train_max_samples= permutation_train_max_samples, permutation_test_max_samples= permutation_test_max_samples)
+              importances: list|None = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', 
+              permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
+        return super().main(optimize_threshold, extra_args, importances, sort_importances, permutation_train_max_samples, permutation_test_max_samples)
+    
+    def return_scores(self, sample: pd.DataFrame):
+        return self.model.predict_proba(sample[self.data.features])
 
     def write_report(self, extra_args: dict = {}):
 
@@ -61,47 +62,5 @@ class RFModelTester(ModelTester):
             for metric in self._metrics_report():
                     file.write(metric)
 
-    def plot_importances(self, importances: list = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', to_file: bool = True, 
-                         permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
-
-        # compute importances
-        imp = dict(feature = self.data.features)
-        for i in importances:
-            match i:
-                case 'permutation_train':
-                    from sklearn.inspection import permutation_importance
-                    pi_train = permutation_importance(self.model, self.data.training_features(), self.data.training_labels(), scoring= ['average_precision'], n_jobs= 1, n_repeats = 3, max_samples=permutation_train_max_samples)
-                    perm_train = pi_train['average_precision'].importances_mean
-                    imp[i] = perm_train
-                case 'permutation_test':
-                    from sklearn.inspection import permutation_importance
-                    pi_test = permutation_importance(self.model, self.data.testing_features(), self.data.testing_labels(), scoring= ['average_precision'], n_jobs= 1, n_repeats = 3, max_samples=permutation_test_max_samples)
-                    perm_test = pi_test['average_precision'].importances_mean
-                    imp[i] = perm_test
-                case 'gini':
-                    gini = self.model.feature_importances_
-                    imp[i] = gini
-        
-        # save to csv
-        imp = pd.DataFrame(imp)
-        imp.to_csv(f'metrics/{self.name}_importances.csv', index= False)
-        if sort_importances:
-            imp = imp.sort_values(by = sort_importances, ascending= False)
-        imp = pd.melt(imp, var_name="type", value_name="importance", id_vars= 'feature')
-        
-        # save to plot
-        plt.figure(figsize= (10, len(self.data.features)/2.5))
-        sns.barplot(data = imp, x = 'importance', y = 'feature', hue = 'type', orient = 'h')
-        plt.grid()
-        if to_file:
-            plt.savefig(f'metrics/{self.name}_importances.png', dpi=150, bbox_inches= 'tight')
-            plt.close()   
-        else: 
-            plt.show()     
-
-        # if sort_importances:
-        #     importances = np.sort(self.model.feature_importances_)[::-1]
-        #     sorted_feat = [x for _,x in sorted(zip(self.model.feature_importances_, self.data.features))][::-1]
-        #     sns.barplot(x = importances, y = sorted_feat)
-        # else:
-        #     sns.barplot(x = self.model.feature_importances_, y = self.data.features)
+    def plot_importances(self, importances: list = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', to_file: bool = True, permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
+        return super().plot_importances(importances, sort_importances, to_file, permutation_train_max_samples, permutation_test_max_samples)

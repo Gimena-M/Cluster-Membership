@@ -14,8 +14,9 @@ The params_search method performs a search on hyperparameters for RF and SVC. It
     * name (str): name for the .csv file where results are saved, and for the files with metrics for the best model.
 Search results are saved in a 'search_results' directory. Best model is saved to a 'saved_models' directory.
 
-The train_model method trains a RF or SVC model. The only argument is:
+The train_model method trains a RF or SVC model. Arguments:
     * model_params (dict): Parameters for the model.
+    * warm_start (bool): Use warm_start for fitting. (default: False)
 The model is saved to a 'saved_models' directory.
 
 A model can be loaded from 'saved_models' with the load_model method.
@@ -77,8 +78,8 @@ class ModelTrainer:
         self.plot_search(plot_to_file= plot_to_file)
         return self.model
 
-    def train_model(self, model_params: dict):
-        self.model.set_params(**model_params)
+    def train_model(self, model_params: dict = {}, warm_start: bool = False):
+        self.model.set_params(warm_start = warm_start, **model_params)
         self.model.fit(self.data.training_features(), self.data.training_labels())
         self.save_model()
         return self.model

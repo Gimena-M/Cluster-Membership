@@ -16,7 +16,8 @@ data = DataHandler(validation_sample= True, features_txt= 'all_features.txt', ba
 data.main()
 
 metrics = []
-features = ['all_features', 'all_features_z_mass', 'all_features_abs_mags', 'all_features_sigma_5', 'all_features_bcg', 'all_features_sigmas']
+# features = ['all_features_bcg', 'all_features_sigmas'] #'all_features', 'all_features_z_mass', 'all_features_abs_mags', 
+features = ['all_features']
 for feat in features: 
 
     layers = [
@@ -39,8 +40,9 @@ for feat in features:
     )
 
     data.features_txt = feat + '.txt'
+    data.features_labels()
     mod = NNModelController(data = data.copy(), name = feat, layers = layers.copy(), compile_params= compile_params, epochs = 1000)
-    mod.main(prep_data= True, model_exists= True)
+    mod.main(model_exists= True, permutation_train_max_samples = 300_000, permutation_test_max_samples = 300_000)
 
     # save metrics in nested list
     metrics.append([mod.tester.p, mod.tester.r, mod.tester.specificity, mod.tester.accuracy, mod.tester.f1, mod.tester.pr_auc, mod.tester.roc_auc, mod.tester.threshold])
