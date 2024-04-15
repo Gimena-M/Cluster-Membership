@@ -114,5 +114,5 @@ class NNModelTester(ModelTester):
     def plot_importances(self, importances: list = ['permutation_train', 'permutation_test'], sort_importances: str|None = 'permutation_train', to_file: bool = True, permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
         return super().plot_importances(importances, sort_importances, to_file, permutation_train_max_samples, permutation_test_max_samples)
 
-    def return_score(self, sample: DataFrame):
+    def return_score(self, sample):
         return self.model.predict(sample, verbose = 0)

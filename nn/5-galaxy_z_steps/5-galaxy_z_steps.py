@@ -41,12 +41,12 @@ for i in range(len(z_lims) - 1):
 
         print(f'Testing {feat} {name}', flush = True)
         mod = NNModelController(data = data.copy(), name = feat)
-        mod.main(model_exists= True, test_name= f'{feat}/{name}')
+        mod.main(model_exists= True, test_name= f'{feat}/{name}', permutation_train_max_samples= 100_000 , permutation_test_max_samples= 15_000)
         met1.append([mod.tester.p, mod.tester.r, mod.tester.specificity, mod.tester.accuracy, mod.tester.f1, mod.tester.pr_auc, mod.tester.roc_auc, mod.tester.threshold])
 
         # Retrain
         print(f'Training {feat} {name}', flush= True)
-        mod.main(model_exists= True, resume_training= True, test_name= f'{feat}/{name}--retrained', retrain_name= f'{feat}/{name}--retrained')
+        mod.main(model_exists= True, resume_training= True, test_name= f'{feat}/{name}--retrained', retrain_name= f'{feat}/{name}--retrained', importances= None)
         met2.append([mod.tester.p, mod.tester.r, mod.tester.specificity, mod.tester.accuracy, mod.tester.f1, mod.tester.pr_auc, mod.tester.roc_auc, mod.tester.threshold])
 
     metrics_1.append(met1)

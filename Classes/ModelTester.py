@@ -60,7 +60,7 @@ class ModelTester:
         self.compute_metrics()
 
     def predict_score(self):
-        scores = self.model.predict_proba(self.data.testing_features())  #probabilities
+        scores = self.model.predict_proba(self.data.testing_features().values)  #probabilities
         self.scores = scores[:,1]
 
     def predict_class(self):
@@ -233,7 +233,7 @@ class ModelTester:
         features = self.data.features
         importances = np.zeros(len(features))
         
-        if n_samples >= 1.0: n_samples = min(n_samples/(mem.shape[0] + nmem.shape[0]), max_samples)
+        if n_samples >= 1.0: n_samples = min(n_samples/max_samples, 1.)
 
         for i,feature in enumerate(features):
 
@@ -241,11 +241,10 @@ class ModelTester:
             # permute n times
             for j in range(n):
                 
-                print('\033[K', end= '\r')
                 print(f'Computing {kind} importance for {feature} ({j+1}/{n})', end='\r', flush= True)
 
-                a = mem[np.random.choice(mem.shape[0], math.ceil(n_samples*mem.shape[0]), replace=False), :]
-                b = nmem[np.random.choice(nmem.shape[0], math.ceil(n_samples*nmem.shape[0]), replace=False), :]
+                a = mem[np.random.choice(mem.shape[0], math.floor(n_samples*mem.shape[0]), replace=False), :]
+                b = nmem[np.random.choice(nmem.shape[0], math.floor(n_samples*nmem.shape[0]), replace=False), :]
                 sample = np.vstack([a,b])
 
                 shuffled = shuffle(sample[:,i], random_state= 42)
@@ -253,6 +252,8 @@ class ModelTester:
 
                 scores = self.return_score(sample[:,:-1])
                 news.append(ap(sample[:,-1], scores))
+
+                print('\033[K', end= '\r')
 
             importances[i] = self.pr_auc - np.mean(news) 
         return importances

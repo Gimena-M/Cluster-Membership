@@ -47,12 +47,13 @@ Loss function: binary_crossentropy
 ----------------------------------------------------------------------
 Loss on test dataset: 0.1067 
 ROC curve AUC: 0.9883599805667636
-Precision-recall AUC: 0.9348889447284506
+Precision-recall AUC: 0.9348889447284507
 F1-score: 0.8530773187039259
 Precision: 0.823841059602649
 Recall: 0.8844649840028439
 Specificity: 0.9676635059567226
 Accuracy: 0.9555151829743057
+Log loss: 1.6033953259524218
 Threshold: 0.6357883810997009
 ----------------------------------------------------------------------
               precision    recall  f1-score   support

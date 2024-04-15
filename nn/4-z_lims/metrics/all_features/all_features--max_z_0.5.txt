@@ -42,14 +42,15 @@ Optimizer: Adam
 Loss function: binary_crossentropy 
 ----------------------------------------------------------------------
 Loss on test dataset: 0.5767 
-ROC curve AUC: 0.7957209622159465
-Precision-recall AUC: 0.5097544506365825
-F1-score: 0.5482289929766054
+ROC curve AUC: 0.7957209835071164
+Precision-recall AUC: 0.5097544835073813
+F1-score: 0.5482289929766055
 Precision: 0.4794520547945205
 Recall: 0.6400424728645587
 Specificity: 0.806739508481806
 Accuracy: 0.7704669730187662
-Threshold: 0.6103760600090027
+Log loss: 8.273208865866467
+Threshold: 0.6103761196136475
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 
