@@ -40,8 +40,9 @@ class RFModelTester(ModelTester):
               permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
         return super().main(optimize_threshold, extra_args, importances, sort_importances, permutation_train_max_samples, permutation_test_max_samples)
     
-    def return_scores(self, sample: pd.DataFrame):
-        return self.model.predict_proba(sample[self.data.features])
+    def return_score(self, sample):
+        s=  self.model.predict_proba(sample)
+        return s[:,1]
 
     def write_report(self, extra_args: dict = {}):
 
@@ -63,4 +64,7 @@ class RFModelTester(ModelTester):
                     file.write(metric)
 
     def plot_importances(self, importances: list = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', to_file: bool = True, permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
-        return super().plot_importances(importances, sort_importances, to_file, permutation_train_max_samples, permutation_test_max_samples)
+        v = self.model.verbose
+        self.model.verbose = 0
+        super().plot_importances(importances, sort_importances, to_file, permutation_train_max_samples, permutation_test_max_samples)
+        self.model.verbose = v

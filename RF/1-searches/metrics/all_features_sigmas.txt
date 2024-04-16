@@ -2,20 +2,20 @@ bootstrap: True
 ccp_alpha: 0.0 
 class_weight: balanced_subsample 
 criterion: entropy 
-max_depth: 100 
-max_features: sqrt 
+max_depth: 20 
+max_features: 0.4 
 max_leaf_nodes: None 
-max_samples: None 
+max_samples: 0.75 
 min_impurity_decrease: 0.0 
-min_samples_leaf: 5 
-min_samples_split: 5 
+min_samples_leaf: 0.0001 
+min_samples_split: 2 
 min_weight_fraction_leaf: 0.0 
 monotonic_cst: None 
-n_estimators: 300 
+n_estimators: 400 
 n_jobs: -1 
-oob_score: False 
+oob_score: <function average_precision_score at 0x000002120D40FE20> 
 random_state: None 
-verbose: 10 
+verbose: 1 
 warm_start: False 
 ----------------------------------------------------------------------
 features_txt: all_features_sigmas.txt 
@@ -33,31 +33,31 @@ bootstrap: True
 ccp_alpha: 0.0 
 class_weight: balanced_subsample 
 criterion: entropy 
-max_depth: 100 
-max_features: sqrt 
+max_depth: 20 
+max_features: 0.4 
 max_leaf_nodes: None 
-max_samples: None 
+max_samples: 0.75 
 min_impurity_decrease: 0.0 
-min_samples_leaf: 5 
-min_samples_split: 5 
+min_samples_leaf: 0.0001 
+min_samples_split: 2 
 min_weight_fraction_leaf: 0.0 
 monotonic_cst: None 
-n_estimators: 300 
+n_estimators: 400 
 n_jobs: -1 
-oob_score: False 
+oob_score: <function average_precision_score at 0x000002120D40FE20> 
 random_state: None 
-verbose: 10 
+verbose: 1 
 warm_start: False 
 ----------------------------------------------------------------------
-ROC curve AUC: 0.937488965096677
-Precision-recall AUC: 0.8770338187597956
-F1-score: 0.8031544489633965
-Precision: 0.7678214112983528
-Recall: 0.8418962057169002
-Specificity: 0.8783259946923238
-Accuracy: 0.8665451647505455
-Log loss: 4.810199824833071
-Threshold: 0.4604008740714725
+ROC curve AUC: 0.937928551767995
+Precision-recall AUC: 0.8777947302534679
+F1-score: 0.8031986314313279
+Precision: 0.7697278749463852
+Recall: 0.8397125952730033
+Specificity: 0.8799361886113568
+Accuracy: 0.8669285010541748
+Log loss: 4.796382983973591
+Threshold: 0.5644557930946512
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 

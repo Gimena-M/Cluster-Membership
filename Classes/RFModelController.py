@@ -42,6 +42,7 @@ By default it assumes that data has already been read and prepared, and that the
 import sys
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import average_precision_score
 sys.path.append('../../Classes')
 from DataHandler import DataHandler
 from RFModelTester import RFModelTester
@@ -50,15 +51,15 @@ from RFModelTrainer import RFModelTrainer
 class RFModelController:
 
     def __init__(self, data: DataHandler, name: str, 
-                 model: RandomForestClassifier = RandomForestClassifier(bootstrap= True, n_jobs = -1, verbose= 0, class_weight= 'balanced_subsample')):
+                 model: RandomForestClassifier = RandomForestClassifier(bootstrap= True, n_jobs = -1, verbose= 0, class_weight= 'balanced_subsample', oob_score= average_precision_score)):
         self.name = name
         self.data = data
         self.model = model
 
     def main_search(self, search_param_distr: dict, search_params: dict, search_class: str,
-               read_data: bool = False, prep_data: bool = False,
+               read_data: bool = False, prep_data: bool = False, plot_search: bool = True,
                test: bool = False, optimize_threshold: bool = True, 
-               importances: list|None = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', 
+               importances: list|None = None, sort_importances: str|None = None, 
                 permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
         
         if read_data:
@@ -67,7 +68,7 @@ class RFModelController:
             self.data.prep()
 
         self.trainer = RFModelTrainer(data = self.data, name = self.name, model = self.model)
-        self.trainer.params_search(search_param_distr= search_param_distr, search_params= search_params, search_class= search_class, name = self.name)
+        self.trainer.params_search(search_param_distr= search_param_distr, search_params= search_params, search_class= search_class, name = self.name, plot_search= plot_search)
         
         if test:
             self.tester = RFModelTester(model= self.trainer.model, data= self.data, name= self.name)
@@ -78,7 +79,7 @@ class RFModelController:
               read_data: bool = False, prep_data: bool = False,
               optimize_threshold: bool = True, test: bool = True, test_name: str|None = None,
               resume_training: bool = False, retrain_name: str|None = None,
-              importances: list|None = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
+              importances: list|None = ['permutation_train', 'permutation_test', 'gini'], sort_importances: str|None = 'gini', permutation_train_max_samples: int|float = 200_000, permutation_test_max_samples: int|float = 200_000):
 
         if read_data:
             self.data.main()

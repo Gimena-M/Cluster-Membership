@@ -33,7 +33,7 @@ class ModelTrainer:
     # model 
     # data: DataHandler
 
-    def params_search(self, search_param_distr: dict, search_params: dict, search_class: str, name:str = "search", plot_to_file: bool = True):
+    def params_search(self, search_param_distr: dict, search_params: dict, search_class: str, name:str = "search", plot_search: bool = True, plot_to_file: bool = True):
 
         # search instantiation and fitting
         # halving searches try every model with a reduced number of samples, select the best models, and repeat with more samples
@@ -75,12 +75,13 @@ class ModelTrainer:
         except:
             print("Best model: not selected")
 
-        self.plot_search(plot_to_file= plot_to_file)
+        if plot_search:
+            self.plot_search(plot_to_file= plot_to_file)
         return self.model
 
     def train_model(self, model_params: dict = {}, warm_start: bool = False):
         self.model.set_params(warm_start = warm_start, **model_params)
-        self.model.fit(self.data.training_features(), self.data.training_labels())
+        self.model.fit(self.data.training_features().values, self.data.training_labels().values)
         self.save_model()
         return self.model
     

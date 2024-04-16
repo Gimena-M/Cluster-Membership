@@ -2,20 +2,20 @@ bootstrap: True
 ccp_alpha: 0.0 
 class_weight: balanced_subsample 
 criterion: entropy 
-max_depth: 50 
-max_features: sqrt 
+max_depth: 20 
+max_features: 0.4 
 max_leaf_nodes: None 
-max_samples: None 
+max_samples: 0.75 
 min_impurity_decrease: 0.0 
-min_samples_leaf: 15 
-min_samples_split: 20 
+min_samples_leaf: 0.0005 
+min_samples_split: 0.0001 
 min_weight_fraction_leaf: 0.0 
 monotonic_cst: None 
-n_estimators: 250 
+n_estimators: 175 
 n_jobs: -1 
-oob_score: False 
+oob_score: <function average_precision_score at 0x0000027C2D37FBE0> 
 random_state: None 
-verbose: 10 
+verbose: 1 
 warm_start: False 
 ----------------------------------------------------------------------
 features_txt: all_features.txt 
@@ -33,37 +33,37 @@ bootstrap: True
 ccp_alpha: 0.0 
 class_weight: balanced_subsample 
 criterion: entropy 
-max_depth: 50 
-max_features: sqrt 
+max_depth: 20 
+max_features: 0.4 
 max_leaf_nodes: None 
-max_samples: None 
+max_samples: 0.75 
 min_impurity_decrease: 0.0 
-min_samples_leaf: 15 
-min_samples_split: 20 
+min_samples_leaf: 0.0005 
+min_samples_split: 0.0001 
 min_weight_fraction_leaf: 0.0 
 monotonic_cst: None 
-n_estimators: 250 
+n_estimators: 175 
 n_jobs: -1 
-oob_score: False 
+oob_score: <function average_precision_score at 0x0000027C2D37FBE0> 
 random_state: None 
-verbose: 10 
+verbose: 1 
 warm_start: False 
 ----------------------------------------------------------------------
-ROC curve AUC: 0.7399908095380368
-Precision-recall AUC: 0.5551590884890936
-F1-score: 0.5768453499618623
-Precision: 0.46378919018024795
-Recall: 0.76278711877801
-Specificity: 0.5785019232871811
-Accuracy: 0.6380969033824385
-Log loss: 13.04430977493156
-Threshold: 0.40106052206627935
+ROC curve AUC: 0.7369642890870133
+Precision-recall AUC: 0.5491497752315035
+F1-score: 0.5745838939073611
+Precision: 0.45578397233792134
+Recall: 0.7771469569828743
+Specificity: 0.5565009094613802
+Accuracy: 0.6278544263573972
+Log loss: 13.413486066668145
+Threshold: 0.44333464926213734
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 
-           0       0.84      0.58      0.68    201218
-           1       0.46      0.76      0.58     96171
+           0       0.84      0.56      0.67    201218
+           1       0.46      0.78      0.57     96171
 
-    accuracy                           0.64    297389
-   macro avg       0.65      0.67      0.63    297389
-weighted avg       0.72      0.64      0.65    297389
+    accuracy                           0.63    297389
+   macro avg       0.65      0.67      0.62    297389
+weighted avg       0.72      0.63      0.64    297389
