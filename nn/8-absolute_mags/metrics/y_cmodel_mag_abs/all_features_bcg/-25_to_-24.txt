@@ -1,0 +1,66 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ normalization (Normalizatio  (None, 62)               125       
+ n)                                                              
+                                                                 
+ dense (Dense)               (None, 512)               32256     
+                                                                 
+ dropout (Dropout)           (None, 512)               0         
+                                                                 
+ dense_1 (Dense)             (None, 512)               262656    
+                                                                 
+ dropout_1 (Dropout)         (None, 512)               0         
+                                                                 
+ dense_2 (Dense)             (None, 32)                16416     
+                                                                 
+ dropout_2 (Dropout)         (None, 32)                0         
+                                                                 
+ dense_3 (Dense)             (None, 1)                 33        
+                                                                 
+=================================================================
+Total params: 311,486
+Trainable params: 311,361
+Non-trainable params: 125
+_________________________________________________________________
+
+
+features_txt: all_features_bcg.txt 
+fields_list: ['W02', 'W03', 'W04', 'W05', 'W06', 'W07'] 
+z_filtered: False 
+min_n500: None 
+max_n500: None 
+min_z: None 
+max_z: None 
+feat_max: {'y_cmodel_mag_abs': -24} 
+feat_min: {'y_cmodel_mag_abs': -25} 
+random_state: 42 
+balance: weights 
+----------------------------------------------------------------------
+epochs: 1000 
+normalization: True 
+weights: True 
+----------------------------------------------------------------------
+Optimizer: Adam 
+Loss function: binary_crossentropy 
+----------------------------------------------------------------------
+Loss on test dataset: 0.1066 
+ROC curve AUC: 0.9924280985002565
+Precision-recall AUC: 0.9835438573958164
+F1-score: 0.9508248730964467
+Precision: 0.9327731092436975
+Recall: 0.9695891297314785
+Specificity: 0.9565479782739892
+Accuracy: 0.9615480029769288
+Log loss: 1.385950452818943
+Threshold: 0.6555628776550293
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.98      0.96      0.97      4971
+           1       0.93      0.97      0.95      3091
+
+    accuracy                           0.96      8062
+   macro avg       0.96      0.96      0.96      8062
+weighted avg       0.96      0.96      0.96      8062
