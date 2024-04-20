@@ -7,10 +7,11 @@ from DataClasses.NewFeatures import NewFeatures
 from DataClasses.Sigmas import Sigmas
 from DataClasses.RedshiftLimits import RedshiftLimits
 from DataClasses.SampleSplit import SampleSplit
+from DataClasses.AbsoluteColors import AbsoluteColors
 import time
 
 if __name__ == '__main__':
-    names = ['HSC-unWISE-W01', 'HSC-unWISE-W02', 'HSC-unWISE-W03', 'HSC-unWISE-W04', 'HSC-unWISE-W05', 'HSC-unWISE-W06']
+    names = ['HSC-unWISE-W01', 'HSC-unWISE-W02', 'HSC-unWISE-W03', 'HSC-unWISE-W04', 'HSC-unWISE-W05', 'HSC-unWISE-W06', 'HSC-unWISE-W07']
     dir = os.path.dirname(__file__) +'/'  #of this file
 
     for name in names:
@@ -36,6 +37,9 @@ if __name__ == '__main__':
         # zLims = RedshiftLimits(name, dir, df_gal= df_gal)
         # df_gal = zLims.main(njobs = 6)
 
-        split = SampleSplit(name, dir, df_gal= df_gal)
-        df_gal = split.main()
+        # split = SampleSplit(name, dir, df_gal= df_gal)
+        # df_gal = split.main()
+
+        absColor = AbsoluteColors(name, dir, df_gal= df_gal)
+        df_gal = absColor.main()
 
