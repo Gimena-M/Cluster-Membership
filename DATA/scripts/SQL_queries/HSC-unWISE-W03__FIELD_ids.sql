@@ -1,0 +1,1 @@
+SELECT object_id, ra, dec FROM pdr2_wide.forced WHERE isprimary='True' AND i_pixelflags_saturatedcenter='False' AND boxSearch(coord, 127.21954, 155.08884, -2.52068, 5.58296)

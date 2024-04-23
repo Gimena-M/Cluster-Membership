@@ -1,6 +1,7 @@
 import os
 from DataClasses.FeatureRetriever import FeatureRetriever
 from DataClasses.IdRetriever import IdRetriever
+from DataClasses.IdRetrieverField import IdRetrieverField
 from DataClasses.DataCleaner import  DataCleaner
 from DataClasses.NewFeatures import NewFeatures
 # from DataClasses.Kcorrections import Kcorrections
@@ -11,16 +12,18 @@ from DataClasses.AbsoluteColors import AbsoluteColors
 import time
 
 if __name__ == '__main__':
-    names = ['HSC-unWISE-W01', 'HSC-unWISE-W02', 'HSC-unWISE-W03', 'HSC-unWISE-W04', 'HSC-unWISE-W05', 'HSC-unWISE-W06', 'HSC-unWISE-W07']
+    names = ['HSC-unWISE-W03__FIELD']
     dir = os.path.dirname(__file__) +'/'  #of this file
 
     for name in names:
         df_gal = None
         # idRet = IdRetriever(name, dir, 'gimenam144')
         # df_gal = idRet.main(write_query= True, run_query= True)
+        # idRet = IdRetrieverField(name, dir, 'gimenam144')
+        # df_gal = idRet.main(write_query= False, run_query= False, select_galaxies= True)
 
         # featRet = FeatureRetriever(name, dir, 'gimenam144', df_gal= df_gal)
-        # df_gal = featRet.main(write_query= True, run_query = True)
+        # df_gal = featRet.main(write_query= False, run_query = False)
 
         # datClean = DataCleaner(name, dir, df_gal= df_gal)
         # df_gal = datClean.main()
@@ -31,8 +34,8 @@ if __name__ == '__main__':
         # # kCorr = Kcorrections(name, dir, df_gal= df_gal)
         # # df_gal = kCorr.main()
 
-        # sigma = Sigmas(name, dir, df_gal= df_gal)
-        # df_gal = sigma.main(njobs = 6)
+        sigma = Sigmas(name, dir, df_gal= df_gal)
+        df_gal = sigma.main(njobs = 6)
 
         # zLims = RedshiftLimits(name, dir, df_gal= df_gal)
         # df_gal = zLims.main(njobs = 6)
@@ -40,6 +43,6 @@ if __name__ == '__main__':
         # split = SampleSplit(name, dir, df_gal= df_gal)
         # df_gal = split.main()
 
-        absColor = AbsoluteColors(name, dir, df_gal= df_gal)
-        df_gal = absColor.main()
+        # absColor = AbsoluteColors(name, dir, df_gal= df_gal)
+        # df_gal = absColor.main()
 

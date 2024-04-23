@@ -10,6 +10,7 @@ The main() method performs all the tasks.
 """
 
 import multiprocessing
+import numpy as np
 import pandas as pd
 
 class NewFeatures:
@@ -53,7 +54,11 @@ class NewFeatures:
 
         # z_cl_near = np.full(self.df_gal.shape[0],-99)
         member = self.df_gal.member.values
-        id_cl = self.df_gal.id_cl.values
+        if 'FIELD' in self.name:
+            id_cl = np.empty(shape = self.df_gal.shape[0])
+            id_cl[:] = np.nan
+        else:
+            id_cl = self.df_gal.id_cl.values
         id_cl_near = self.df_gal.id_cl_near.values
         # for i,(mem,id_true,id_near) in enumerate(zip(member,id_cl,id_cl_near)):
         #     if mem == 0:

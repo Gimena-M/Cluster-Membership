@@ -16,6 +16,7 @@ The main() method reads and prepares the data to be used by most scripts.
 The prep() method only prepares the data.
 """
 
+import sys
 import os
 import numpy as np
 import pandas as pd
@@ -41,8 +42,12 @@ class DataHandler:
         self.random_state = random_state
         self.balance = balance
 
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        self.data_dir = os.path.join(current_dir, '../DATA/')
+        # check if running in google colab
+        if 'google.colab' in sys.modules:
+            self.data_dir = '/content/drive/MyDrive/Cluster-Membership-DATA/'
+        else:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            self.data_dir = os.path.join(current_dir, '../DATA/')  
 
     def args(self):
         # return dictionary with attributes.
@@ -268,7 +273,6 @@ class DataHandler:
         self.class_weights()
 
     def balancing(self):
-        self.class_weights()
         match self.balance:
             case None:
                 pass
@@ -277,6 +281,7 @@ class DataHandler:
             case 'smote':
                 self.smote()
             case 'weights':
+                self.class_weights()
                 return self.weights
             case _:
                 raise ValueError("Invalid value for 'balance'")
