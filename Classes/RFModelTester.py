@@ -40,6 +40,10 @@ class RFModelTester(ModelTester):
               permutation_train_max_samples: int|float = 1.0, permutation_test_max_samples: int|float = 1.0):
         return super().main(optimize_threshold, extra_args, importances, sort_importances, permutation_train_max_samples, permutation_test_max_samples)
     
+    def predict_score(self):
+        scores = self.model.predict_proba(self.data.testing_features().values)  #probabilities
+        self.scores = scores[:,1]
+
     def return_score(self, sample):
         s=  self.model.predict_proba(sample)
         return s[:,1]

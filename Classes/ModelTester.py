@@ -59,10 +59,6 @@ class ModelTester:
         self.predict_class()
         self.compute_metrics()
 
-    def predict_score(self):
-        scores = self.model.predict_proba(self.data.testing_features().values)  #probabilities
-        self.scores = scores[:,1]
-
     def predict_class(self):
         # self.predictions = self.model.predict(self.data.testing_features())  #labels
         self.predictions = [math.floor(p) if p < self.threshold else math.ceil(p) for p in self.scores]
@@ -81,7 +77,11 @@ class ModelTester:
         self.r = recall_score(self.data.testing_labels(), self.predictions, pos_label= 1)
         self.specificity = recall_score(self.data.testing_labels(), self.predictions, pos_label= 0)
         self.accuracy = accuracy_score(self.data.testing_labels(), self.predictions)
-        self.log_loss = log_loss(self.data.testing_labels(), self.predictions)
+        try:
+            self.log_loss = log_loss(self.data.testing_labels(), self.predictions)
+        except:
+            self.log_loss = 999.
+            Warning('Log loss not computed')
 
     def optimize_threshold(self):
         # With F-Score

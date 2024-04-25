@@ -1,0 +1,43 @@
+handle: <pylibraft.common.handle.Handle object at 0x78a2e1c81710> 
+verbose: 4 
+output_type: input 
+C: 0.01 
+kernel: rbf 
+degree: 3 
+gamma: auto 
+coef0: 0.0 
+tol: 0.001 
+cache_size: 4000 
+max_iter: -1 
+nochange_steps: 1000 
+probability: False 
+random_state: None 
+class_weight: balanced 
+multiclass_strategy: ovo 
+----------------------------------------------------------------------
+features_txt: all_features.txt 
+fields_list: ['W02', 'W03', 'W04', 'W05', 'W06', 'W07'] 
+z_filtered: False 
+min_n500: None 
+max_n500: None 
+min_z: None 
+max_z: None 
+feat_max: {} 
+feat_min: {} 
+random_state: 42 
+balance: undersample 
+----------------------------------------------------------------------
+F1-score: 0.5675512838904031
+Precision: 0.4684062402749401
+Recall: 0.7199363633527779
+Specificity: 0.60949318649425
+Accuracy: 0.6452088005945076
+----------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       0.82      0.61      0.70    201218
+           1       0.47      0.72      0.57     96171
+
+    accuracy                           0.65    297389
+   macro avg       0.64      0.66      0.63    297389
+weighted avg       0.71      0.65      0.66    297389

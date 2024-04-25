@@ -33,3 +33,28 @@ class RFModelTrainer(ModelTrainer):
         self.model = model
         self.data = data
         self.name = name
+
+    def _select_search_class(self, search_param_distr: dict, search_class: str):
+         # halving searches try every model with a reduced number of samples, select the best models, and repeat with more samples
+        # i don't think they work well for this problem....
+        match search_class:
+            # case 'HalvingGridSearchCV':
+            #     from sklearn.model_selection import HalvingGridSearchCV
+            #     search_model = HalvingGridSearchCV(estimator= self.model, param_grid= search_param_distr)
+            # case 'HalvingRandomSearchCV':
+            #     from sklearn.model_selection import HalvingRandomSearchCV
+            #     search_model = HalvingRandomSearchCV(estimator= self.model, param_distributions= search_param_distr)
+            case 'GridSearchCV':
+                from sklearn.model_selection import GridSearchCV
+                search_model = GridSearchCV(estimator= self.model, param_grid= search_param_distr)
+            case 'RandomizedSearchCV':
+                from sklearn.model_selection import RandomizedSearchCV
+                search_model = RandomizedSearchCV(estimator= self.model, param_distributions= search_param_distr)
+            case _:
+                raise ValueError("Invalid value for 'search_class'")
+            
+        return search_model
+    
+    def train_model(self, model_params: dict = ..., warm_start: bool = False):
+        model_params['warm_start'] = warm_start
+        return super().train_model(model_params, warm_start)
