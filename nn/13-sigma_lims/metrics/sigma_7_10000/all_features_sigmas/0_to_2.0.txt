@@ -41,22 +41,22 @@ weights: True
 Optimizer: Adam 
 Loss function: binary_crossentropy 
 ----------------------------------------------------------------------
-Loss on test dataset: 0.0191 
-ROC curve AUC: 0.848043188101821
-Precision-recall AUC: 0.10381827341437994
-F1-score: 0.18181818181818182
-Precision: 0.1875
-Recall: 0.17647058823529413
-Specificity: 0.9973662884927067
-Accuracy: 0.9945487583282859
-Log loss: 0.19648266535557524
-Threshold: 0.0899784117937088
+Loss on test dataset: 0.1309 
+ROC curve AUC: 0.8133249934901879
+Precision-recall AUC: 0.22655638741010653
+F1-score: 0.27574468085106385
+Precision: 0.29724770642201837
+Recall: 0.2571428571428571
+Specificity: 0.9780314328323965
+Accuracy: 0.9528897254207263
+Log loss: 1.6980264080014782
+Threshold: 0.25324878096580505
 ----------------------------------------------------------------------
               precision    recall  f1-score   support
 
-           0       1.00      1.00      1.00      4936
-           1       0.19      0.18      0.18        17
+           0       0.97      0.98      0.98     17434
+           1       0.30      0.26      0.28       630
 
-    accuracy                           0.99      4953
-   macro avg       0.59      0.59      0.59      4953
-weighted avg       0.99      0.99      0.99      4953
+    accuracy                           0.95     18064
+   macro avg       0.64      0.62      0.63     18064
+weighted avg       0.95      0.95      0.95     18064

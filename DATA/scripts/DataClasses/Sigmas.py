@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from astropy.cosmology import FlatLambdaCDM
+import astropy.units as u
 import math
 import multiprocessing
 
@@ -46,12 +47,18 @@ class Sigmas:
         self.dat  = self.dat.drop_duplicates(subset = ['ra','dec'])
         self.mpc_deg = cosmo.kpc_proper_per_arcmin(self.df_gal['phot_z'].values).value / 1000 * 60  # Mpc/degree
 
+    def _rec_vel(self,z: float):
+        # from scipy.integrate import simpson
+        # z_int = np.linspace(0,z,int(500*z))
+        # y = 1./cosmo.efunc(z_int)
+        # return 300_000 * simpson(y = y, x = z_int)
+        v = cosmo.H0 * cosmo.comoving_distance(z)
+        return v.to(u.km / u.s).value 
+
     def _velocity_bins(self):
         # velocities
-        c = 300_000 # km/s
-        # z + 1 = sqrt((1 + v/c)/(1-v/c))
-        vels_dat = np.array([(z**2 + z*2)/(z**2 + 2*z + 2) *c for z in self.dat['phot_z'].values])
-        vels_df = np.array([(z**2 + z*2)/(z**2 + 2*z + 2) *c for z in self.df_gal['phot_z'].values] )
+        vels_dat = np.array([self._rec_vel(z) for z in self.dat['phot_z'].values])
+        vels_df = np.array([self._rec_vel(z) for z in self.df_gal['phot_z'].values] )
         
         for v in vels:
             for j in neig:
