@@ -57,4 +57,4 @@ class RFModelTrainer(ModelTrainer):
     
     def train_model(self, model_params: dict = ..., warm_start: bool = False):
         model_params['warm_start'] = warm_start
-        return super().train_model(model_params, warm_start)
+        return super().train_model(model_params)
